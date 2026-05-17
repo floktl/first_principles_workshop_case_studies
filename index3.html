@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * { box-sizing: border-box; }
+
         body {
             background-color: #0a0a0c;
             color: #e2e8f0;
@@ -23,9 +24,13 @@
         body::before {
             content: '';
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at 10% 10%, rgba(94, 234, 212, 0.03) 0%, transparent 40%),
-                        radial-gradient(circle at 90% 90%, rgba(222, 255, 154, 0.03) 0%, transparent 40%);
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(94, 234, 212, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(222, 255, 154, 0.03) 0%, transparent 40%);
             z-index: -1;
         }
 
@@ -34,15 +39,59 @@
             margin: 0 auto;
         }
 
-        header { text-align: center; margin-bottom: 50px; }
-        header h1 { color: #deff9a; font-size: 3rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: -1px; }
-        header p { color: #5eead4; font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; }
-        .back-to-menu { color: #5eead4; text-decoration: none; border: 1px solid #5eead4; padding: 10px 14px; border-radius: 8px; display: inline-block; background: rgba(94,234,212,0.04); }
-        .back-to-menu:hover { background: rgba(94,234,212,0.12); }
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
 
-        .view { display: none; animation: fadeIn 0.4s ease-in-out; }
-        .view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        header h1 {
+            color: #deff9a;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        header p {
+            color: #5eead4;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+        }
+
+        .back-to-menu {
+            color: #5eead4;
+            text-decoration: none;
+            border: 1px solid #5eead4;
+            padding: 10px 14px;
+            border-radius: 8px;
+            display: inline-block;
+            background: rgba(94, 234, 212, 0.04);
+        }
+
+        .back-to-menu:hover {
+            background: rgba(94, 234, 212, 0.12);
+        }
+
+        .view {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
         .level-grid {
             display: grid;
@@ -62,25 +111,58 @@
             overflow: hidden;
         }
 
-        .level-card:hover { transform: translateY(-5px); border-color: #deff9a; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .level-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+        .level-card:hover {
+            transform: translateY(-5px);
+            border-color: #deff9a;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
+
+        .level-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+
         .card-lvl1::before { background: #60a5fa; }
         .card-lvl2::before { background: #facc15; }
         .card-lvl3::before { background: #f87171; }
 
-        .level-icon { font-size: 3rem; margin-bottom: 20px; color: #5eead4; }
-        .level-card h2 { color: #f8fafc; margin-bottom: 10px; font-size: 1.8rem; }
-        .level-card p { color: #94a3b8; font-size: 1rem; }
+        .level-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #5eead4;
+        }
+
+        .level-card h2 {
+            color: #f8fafc;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .level-card p {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
 
         .back-btn {
-            background: transparent; border: 1px solid #5eead4; color: #5eead4;
-            padding: 10px 20px; border-radius: 8px; cursor: pointer;
-            font-family: 'JetBrains Mono', monospace; font-size: 1rem;
-            margin-bottom: 30px; transition: all 0.2s;
+            background: transparent;
+            border: 1px solid #5eead4;
+            color: #5eead4;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            margin-bottom: 30px;
+            transition: all 0.2s;
         }
-        .back-btn:hover { background: rgba(94, 234, 212, 0.1); }
+
+        .back-btn:hover {
+            background: rgba(94, 234, 212, 0.1);
+        }
 
         .challenge-box {
             background: #1e1e1e;
@@ -100,26 +182,76 @@
         }
 
         .hint-btn {
-            background: #deff9a; color: #000; border: none; font-weight: 700;
-            padding: 15px 30px; border-radius: 8px; cursor: pointer; font-size: 1.1rem;
-            font-family: 'Urbanist', sans-serif; display: block; width: 100%; transition: all 0.2s; margin-bottom: 20px;
+            background: #deff9a;
+            color: #000;
+            border: none;
+            font-weight: 700;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-family: 'Urbanist', sans-serif;
+            display: block;
+            width: 100%;
+            transition: all 0.2s;
+            margin-bottom: 20px;
         }
-        .hint-btn:hover { background: #bfe667; }
+
+        .hint-btn:hover {
+            background: #bfe667;
+        }
 
         .hint-content {
-            display: none; margin-top: 10px; background: #111418; border: 1px solid #2d3748;
-            border-radius: 12px; padding: 25px; animation: fadeIn 0.4s ease-in-out;
+            display: none;
+            margin-top: 10px;
+            background: #111418;
+            border: 1px solid #2d3748;
+            border-radius: 12px;
+            padding: 25px;
+            animation: fadeIn 0.4s ease-in-out;
         }
-        .hint-step { margin-bottom: 18px; }
-        .hint-step h3 { font-family: 'JetBrains Mono', monospace; font-size: 1.05rem; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
-        .h-ghost { color: #f87171; }
-        .h-truth { color: #5eead4; }
-        .h-rebuild { color: #deff9a; }
-        .rebuild-box {
-            background: rgba(94, 234, 212, 0.05); border: 1px solid #5eead4;
-            padding: 20px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 1rem;
+
+        .hint-step {
+            margin-bottom: 22px;
         }
-        .rebuild-box span { color: #deff9a; }
+
+        .hint-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .hint-step h3 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.05rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #deff9a;
+        }
+
+        .hint-step p {
+            color: #cbd5e1;
+            margin: 0;
+        }
+
+        .step-number {
+            color: #5eead4;
+        }
+
+        .action-box {
+            background: rgba(94, 234, 212, 0.05);
+            border: 1px solid #5eead4;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            color: #e2e8f0;
+        }
+
+        .action-box span {
+            color: #deff9a;
+        }
+
         .top-nav {
             display: flex;
             flex-wrap: wrap;
@@ -128,6 +260,7 @@
             margin-top: 20px;
             margin-bottom: 35px;
         }
+
         .top-nav a {
             background: rgba(94, 234, 212, 0.08);
             border: 1px solid #5eead4;
@@ -139,8 +272,36 @@
             text-align: center;
             transition: background 0.2s, transform 0.2s;
         }
-        .top-nav a:hover { background: rgba(94, 234, 212, 0.16); transform: translateY(-2px); }
-        .top-nav a strong { display: block; color: #deff9a; margin-bottom: 6px; }
+
+        .top-nav a:hover {
+            background: rgba(94, 234, 212, 0.16);
+            transform: translateY(-2px);
+        }
+
+        .top-nav a strong {
+            display: block;
+            color: #deff9a;
+            margin-bottom: 6px;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 28px 16px;
+            }
+
+            header h1 {
+                font-size: 2.2rem;
+            }
+
+            .level-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .challenge-box,
+            .hint-content {
+                padding: 22px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -149,165 +310,343 @@
     <header>
         <h1>Life Challenge Workshop</h1>
         <p>>_ Three personal challenges designed for reflection and decision practice.</p>
-        <p style="margin-top: 0.5rem;"><a href="index.html" class="back-to-menu"><i class="fa-solid fa-arrow-left"></i> Back to Menu</a></p>
+        <p style="margin-top: 0.5rem;">
+            <a href="index.html" class="back-to-menu">
+                <i class="fa-solid fa-arrow-left"></i> Back to Menu
+            </a>
+        </p>
     </header>
 
     <div id="menu-view" class="view active">
         <div class="level-grid">
             <div class="level-card card-lvl1" onclick="showLevel('lvl7')">
                 <i class="fa-solid fa-hourglass-half level-icon"></i>
-                <h2>Level 7: Time allocation</h2>
+                <h2>Level 1: Time allocation</h2>
                 <p>Decide how to spend an overloaded weekend with people and projects.</p>
             </div>
+
             <div class="level-card card-lvl2" onclick="showLevel('lvl8')">
                 <i class="fa-solid fa-comments level-icon"></i>
-                <h2>Level 8: Difficult conversation</h2>
+                <h2>Level 2: Difficult conversation</h2>
                 <p>Plan how to address a strained relationship without causing more harm.</p>
             </div>
+
             <div class="level-card card-lvl3" onclick="showLevel('lvl9')">
                 <i class="fa-solid fa-seedling level-icon"></i>
-                <h2>Level 9: Habit shift</h2>
+                <h2>Level 3: Habit shift</h2>
                 <p>Identify the first sustainable step toward a healthier daily routine.</p>
             </div>
+
             <div class="level-card card-lvl1" onclick="showLevel('lvl10')">
                 <i class="fa-solid fa-skull level-icon"></i>
-                <h2>Level 10: Core value conflict</h2>
+                <h2>Level 4: Core value conflict</h2>
                 <p>Navigate a choice between two deeply important but incompatible goals.</p>
             </div>
+
             <div class="level-card card-lvl2" onclick="showLevel('lvl11')">
                 <i class="fa-solid fa-chalkboard-user level-icon"></i>
-                <h2>Level 11: Teaching without a degree</h2>
+                <h2>Real world example: Teaching without a degree</h2>
                 <p>Flo wants to teach but believes he must first earn a formal teaching degree.</p>
             </div>
         </div>
     </div>
 
     <div id="lvl7" class="view">
-        <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Levels</button>
+        <button class="back-btn" onclick="goBack()">
+            <i class="fa-solid fa-arrow-left"></i> Back to Levels
+        </button>
+
         <div class="challenge-box">
             <h3>Time allocation</h3>
             <p>You're facing a weekend packed with a friend visiting, a professional deadline, and a personal wellness goal. Choose which commitments get priority, what can be postponed, and how to keep the plan realistic.</p>
         </div>
-        <button class="hint-btn" onclick="revealHint('hint7')">Show hint</button>
+
+        <button class="hint-btn" onclick="revealHint('hint7')">Show explanation</button>
+
         <div id="hint7" class="hint-content">
             <div class="hint-step">
-                <h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3>
-                <p>You may be assuming all commitments are equally urgent.</p>
+                <h3><span class="step-number">1.</span> DEFINE — What is the real goal?</h3>
+                <p>
+                    The real goal is not to do everything. The real goal is to spend the weekend in a way that protects
+                    the most important commitments without creating unnecessary stress.
+                </p>
             </div>
+
             <div class="hint-step">
-                <h3 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h3>
-                <p>Time is limited and energy is not. What matters most is not just the task, but whether it advances your real priorities or simply adds pressure.</p>
+                <h3><span class="step-number">2.</span> HUNT — What assumption is blocking the solution?</h3>
+                <p>
+                    The hidden assumption is that all commitments are equally important and must all be completed perfectly.
+                    This creates pressure before any prioritization happens.
+                </p>
             </div>
+
             <div class="hint-step">
-                <h3 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Tip</h3>
-                <div class="rebuild-box">"List fixed commitments first, then compare the remaining options against their value and cost. Keep the plan small enough that it feels sustainable."</div>
+                <h3><span class="step-number">3.</span> STRIP — What basic truths remain?</h3>
+                <p>
+                    Time is limited. Energy is limited. Some commitments are fixed, while others are flexible.
+                    Not every task has the same consequence if it is delayed or reduced.
+                </p>
+            </div>
+
+            <div class="hint-step">
+                <h3><span class="step-number">4.</span> REBUILD — What better path follows from those truths?</h3>
+                <p>
+                    First place the fixed commitments. Then compare the remaining tasks by value, urgency, and energy cost.
+                    The better plan is not the fullest plan, but the one that can actually be followed.
+                </p>
+            </div>
+
+            <div class="hint-step">
+                <h3><span class="step-number">5.</span> ACTION — What is the next 24-hour task?</h3>
+                <div class="action-box">
+                    In the next 24 hours, make a simple weekend schedule with <span>fixed commitments first</span>,
+                    then choose <span>one professional priority</span> and <span>one wellness action</span> that are realistic.
+                </div>
             </div>
         </div>
     </div>
 
     <div id="lvl8" class="view">
-        <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Levels</button>
+        <button class="back-btn" onclick="goBack()">
+            <i class="fa-solid fa-arrow-left"></i> Back to Levels
+        </button>
+
         <div class="challenge-box">
             <h3>Difficult conversation</h3>
             <p>You need to tell someone close that their recent behavior is affecting you negatively. Decide how to frame the feedback, when to bring it up, and what outcome would feel respectful to both people.</p>
         </div>
-        <button class="hint-btn" onclick="revealHint('hint8')">Show hint</button>
+
+        <button class="hint-btn" onclick="revealHint('hint8')">Show explanation</button>
+
         <div id="hint8" class="hint-content">
             <div class="hint-step">
-                <h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3>
-                <p>You may be assuming they already understand how their actions affect you.</p>
+                <h3><span class="step-number">1.</span> DEFINE — What is the real goal?</h3>
+                <p>
+                    The real goal is not to win an argument. The goal is to improve the relationship by making the problem visible
+                    in a respectful and specific way.
+                </p>
             </div>
+
             <div class="hint-step">
-                <h3 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h3>
-                <p>People rarely read minds. Clear, specific examples are more useful than general criticism.</p>
+                <h3><span class="step-number">2.</span> HUNT — What assumption is blocking the solution?</h3>
+                <p>
+                    The hidden assumption is that the other person already understands how their behavior affects you.
+                    Another assumption may be that honesty must automatically create conflict.
+                </p>
             </div>
+
             <div class="hint-step">
-                <h3 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Tip</h3>
-                <div class="rebuild-box">"Name the behavior, describe the impact, and offer a positive next step. Keep the focus on actions, not identity, so the conversation stays constructive."</div>
+                <h3><span class="step-number">3.</span> STRIP — What basic truths remain?</h3>
+                <p>
+                    People cannot respond to what they do not know. Specific examples are easier to understand than general blame.
+                    A calm time and a clear request make the conversation safer.
+                </p>
+            </div>
+
+            <div class="hint-step">
+                <h3><span class="step-number">4.</span> REBUILD — What better path follows from those truths?</h3>
+                <p>
+                    The better approach is to describe the behavior, explain the impact, and ask for a concrete change.
+                    Focus on actions rather than attacking the person’s identity.
+                </p>
+            </div>
+
+            <div class="hint-step">
+                <h3><span class="step-number">5.</span> ACTION — What is the next 24-hour task?</h3>
+                <div class="action-box">
+                    In the next 24 hours, write a short conversation plan:
+                    <span>one behavior</span>, <span>one impact</span>, and <span>one respectful request</span>.
+                </div>
             </div>
         </div>
     </div>
 
     <div id="lvl9" class="view">
-        <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Levels</button>
+        <button class="back-btn" onclick="goBack()">
+            <i class="fa-solid fa-arrow-left"></i> Back to Levels
+        </button>
+
         <div class="challenge-box">
             <h3>Habit shift</h3>
             <p>You want to start a new daily habit, but previous attempts failed because they were too ambitious. Pick a small, concrete first action and identify the environmental trigger that will make it actually happen.</p>
         </div>
-        <button class="hint-btn" onclick="revealHint('hint9')">Show hint</button>
+
+        <button class="hint-btn" onclick="revealHint('hint9')">Show explanation</button>
+
         <div id="hint9" class="hint-content">
             <div class="hint-step">
-                <h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3>
-                <p>You may be assuming motivation alone will carry the habit forward.</p>
+                <h3><span class="step-number">1.</span> DEFINE — What is the real goal?</h3>
+                <p>
+                    The real goal is not to transform your whole life immediately.
+                    The goal is to create a habit that is small enough to repeat consistently.
+                </p>
             </div>
+
             <div class="hint-step">
-                <h3 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h3>
-                <p>Habits grow through consistency, not one-time effort. A tiny action linked to an existing routine is more reliable than a big goal.</p>
+                <h3><span class="step-number">2.</span> HUNT — What assumption is blocking the solution?</h3>
+                <p>
+                    The hidden assumption is that motivation will be enough.
+                    Another assumption is that a habit must be big to matter.
+                </p>
             </div>
+
             <div class="hint-step">
-                <h3 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Tip</h3>
-                <div class="rebuild-box">"Choose a habit small enough to do even when you don't feel like it, and attach it to something you already do every day."</div>
+                <h3><span class="step-number">3.</span> STRIP — What basic truths remain?</h3>
+                <p>
+                    Motivation changes. Environment matters. Small actions are easier to repeat.
+                    A habit becomes stronger when it is attached to something you already do.
+                </p>
+            </div>
+
+            <div class="hint-step">
+                <h3><span class="step-number">4.</span> REBUILD — What better path follows from those truths?</h3>
+                <p>
+                    Instead of designing the perfect routine, design the smallest version.
+                    Attach it to an existing trigger, such as brushing your teeth, making coffee, or closing your laptop.
+                </p>
+            </div>
+
+            <div class="hint-step">
+                <h3><span class="step-number">5.</span> ACTION — What is the next 24-hour task?</h3>
+                <div class="action-box">
+                    In the next 24 hours, choose <span>one tiny habit</span> and connect it to
+                    <span>one existing daily routine</span>. Make it so small that skipping it feels harder than doing it.
+                </div>
             </div>
         </div>
     </div>
 
     <div id="lvl10" class="view">
-        <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Levels</button>
+        <button class="back-btn" onclick="goBack()">
+            <i class="fa-solid fa-arrow-left"></i> Back to Levels
+        </button>
+
         <div class="challenge-box">
             <h3>Core value conflict</h3>
             <p>You face a choice where both paths align with deeply held values: pursuing an ambitious goal that would require abandoning time with family, or staying present with loved ones and letting the opportunity pass. Neither choice feels fully right. Define which value takes priority in this season of your life, and articulate why the other one doesn't disappear—it just takes a different form.</p>
         </div>
-        <button class="hint-btn" onclick="revealHint('hint10')">Show hint</button>
+
+        <button class="hint-btn" onclick="revealHint('hint10')">Show explanation</button>
+
         <div id="hint10" class="hint-content">
             <div class="hint-step">
-                <h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3>
-                <p>You may be assuming that one of your values is less important than you thought, or that a perfect choice exists that honors both fully.</p>
+                <h3><span class="step-number">1.</span> DEFINE — What is the real goal?</h3>
+                <p>
+                    The real goal is not to find a perfect option with no sacrifice.
+                    The goal is to make a conscious choice between two meaningful values.
+                </p>
             </div>
+
             <div class="hint-step">
-                <h3 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h3>
-                <p>The most meaningful choices are not between good and bad, but between two goods. Growth means consciously choosing which good takes priority <strong>right now</strong>, while acknowledging the other value remains real and will emerge again in different seasons.</p>
+                <h3><span class="step-number">2.</span> HUNT — What assumption is blocking the solution?</h3>
+                <p>
+                    The hidden assumption is that if one value leads right now, the other value has been betrayed.
+                    You may also be assuming that the “right” choice should feel painless.
+                </p>
             </div>
+
             <div class="hint-step">
-                <h3 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Tip</h3>
-                <div class="rebuild-box">"Name the tradeoff clearly. Ask yourself: what season am I in, and which value needs to lead for now? Then commit to that choice without pretending the other value doesn't matter."</div>
+                <h3><span class="step-number">3.</span> STRIP — What basic truths remain?</h3>
+                <p>
+                    Both values are real. Time and attention are limited. Different seasons of life require different priorities.
+                    Choosing one value now does not erase the other.
+                </p>
+            </div>
+
+            <div class="hint-step">
+                <h3><span class="step-number">4.</span> REBUILD — What better path follows from those truths?</h3>
+                <p>
+                    The better path is to name the tradeoff honestly and decide which value needs to lead in this season.
+                    Then find a smaller way to still honor the other value.
+                </p>
+            </div>
+
+            <div class="hint-step">
+                <h3><span class="step-number">5.</span> ACTION — What is the next 24-hour task?</h3>
+                <div class="action-box">
+                    In the next 24 hours, write down <span>the two values in conflict</span>,
+                    choose <span>which one leads this season</span>, and define
+                    <span>one small way to respect the other value</span>.
+                </div>
             </div>
         </div>
     </div>
 
     <div id="lvl11" class="view">
-        <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Levels</button>
+        <button class="back-btn" onclick="goBack()">
+            <i class="fa-solid fa-arrow-left"></i> Back to Levels
+        </button>
+
         <div class="challenge-box">
             <h3>Flo's teaching path</h3>
             <p>Flo wants to teach but doesn't have a formal teaching degree. He believes the only valid path is a bachelor in education, even though some high-demand areas hire teachers with direct experience and fewer bureaucratic hurdles. Decide how to target those regions, gain experience, and treat the degree as optional rather than mandatory.</p>
         </div>
-        <button class="hint-btn" onclick="revealHint('hint11')">Show hint</button>
+
+        <button class="hint-btn" onclick="revealHint('hint11')">Show explanation</button>
+
         <div id="hint11" class="hint-content">
             <div class="hint-step">
-                <h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3>
-                <p>You assumed you absolutely need a teaching bachelor degree before you can start teaching.</p>
+                <h3><span class="step-number">1.</span> DEFINE — What is the real goal?</h3>
+                <p>
+                    The real goal is not “get a bachelor degree.” The real goal is:
+                    <strong>start teaching in a realistic way.</strong>
+                    The degree is only one possible path, not the goal itself.
+                </p>
             </div>
+
             <div class="hint-step">
-                <h3 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h3>
-                <p>Teaching in some areas is in high demand. High demand creates less bureaucracy. By targeting those regions directly, you can question the requirement of having a degree and focus on what actually matters: experience and budget.</p>
+                <h3><span class="step-number">2.</span> HUNT — What assumption is blocking the solution?</h3>
+                <p>
+                    The hidden assumption is:
+                    <strong>“I cannot teach unless I first complete a formal teaching degree.”</strong>
+                    This assumption makes the path feel expensive, slow, and almost impossible before any real teaching experience begins.
+                </p>
             </div>
+
             <div class="hint-step">
-                <h3 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Tip</h3>
-                <div class="rebuild-box">"Because I know <span>[high-demand teaching areas relax degree requirements]</span> is definitely true, my next step is to <span>[build teaching experience through tutoring, volunteer work, or substitute teaching in those regions]</span>, rather than worrying about <span>[needing a formal bachelor degree first]</span>. I found out that my only hurdle is experience and a budget, not a degree."</div>
+                <h3><span class="step-number">3.</span> STRIP — What basic truths remain?</h3>
+                <p>
+                    Some regions or teaching areas have high demand. High demand often lowers barriers.
+                    Teaching ability can also be demonstrated through experience, tutoring, volunteering,
+                    substitute teaching, workshops, mentoring, or subject expertise.
+                    So the basic truth is:
+                    <strong>the first hurdle is not necessarily a degree; it may be experience, proof of ability, and finding the right region.</strong>
+                </p>
+            </div>
+
+            <div class="hint-step">
+                <h3><span class="step-number">4.</span> REBUILD — What better path follows from those truths?</h3>
+                <p>
+                    Instead of starting with the most expensive and formal route, rebuild the path from the goal:
+                    find places where teachers are needed, check their actual requirements, and build direct teaching experience first.
+                    The new logic is:
+                    <strong>target high-demand regions, gain practical experience, and treat the degree as optional unless it is truly required.</strong>
+                </p>
+            </div>
+
+            <div class="hint-step">
+                <h3><span class="step-number">5.</span> ACTION — What is the next 24-hour task?</h3>
+                <div class="action-box">
+                    In the next 24 hours, Flo should <span>research 5 high-demand teaching regions or programs</span>,
+                    write down their actual entry requirements, and contact <span>at least 2 schools, tutoring centers, or education programs</span>
+                    to ask what experience would make him eligible.
+                </div>
             </div>
         </div>
     </div>
-
 </div>
 
 <script>
     function showLevel(levelId) {
         document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
         document.getElementById(levelId).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function goBack() {
         document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
         document.getElementById('menu-view').classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function revealHint(hintId) {

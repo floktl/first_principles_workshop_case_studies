@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * { box-sizing: border-box; }
+
         body {
             background-color: #0a0a0c;
             color: #e2e8f0;
@@ -34,37 +35,84 @@
             margin: 0 auto;
         }
 
-        header { text-align: center; margin-bottom: 50px; }
-        header h1 { color: #deff9a; font-size: 3rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: -1px; }
-        header p { color: #5eead4; font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; }
-        .top-nav {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 20px;
-            margin-bottom: 35px;
-        }
-        .top-nav a {
-            background: rgba(94, 234, 212, 0.08);
-            border: 1px solid #5eead4;
-            color: #5eead4;
-            text-decoration: none;
-            padding: 16px 18px;
-            border-radius: 10px;
-            min-width: 180px;
+        header {
             text-align: center;
-            transition: background 0.2s, transform 0.2s;
+            margin-bottom: 50px;
         }
-        .top-nav a:hover { background: rgba(94, 234, 212, 0.16); transform: translateY(-2px); }
-        .top-nav a strong { display: block; color: #deff9a; margin-bottom: 6px; }
 
-        /* VIEW TOGGLING */
-        .view { display: none; animation: fadeIn 0.4s ease-in-out; }
-        .view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        header h1 {
+            color: #deff9a;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
 
-        /* GRID VIEW */
+        header p {
+            color: #5eead4;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+        }
+
+        .view {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .framework-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .framework-step {
+            background: #111418;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .framework-step:hover,
+        .framework-step:focus {
+            border-color: #deff9a;
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.45);
+            outline: none;
+        }
+
+        .framework-step h4 {
+            color: #deff9a;
+            margin: 0 0 10px 0;
+            font-size: 0.9rem;
+        }
+
+        .framework-step p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .framework-step small {
+            display: block;
+            margin-top: 12px;
+            color: #5eead4;
+            font-size: 0.7rem;
+        }
+
         .level-grid {
             display: flex;
             gap: 20px;
@@ -85,99 +133,158 @@
             text-align: center;
             position: relative;
             overflow: hidden;
+            text-decoration: none;
+            color: inherit;
         }
 
-        .level-card:hover { transform: translateY(-5px); border-color: #deff9a; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .level-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+        .level-card:hover {
+            transform: translateY(-5px);
+            border-color: #deff9a;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
+
+        .level-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 4px;
+        }
+
         .card-lvl1::before { background: #60a5fa; }
         .card-lvl2::before { background: #facc15; }
         .card-lvl3::before { background: #f87171; }
 
-        .level-icon { font-size: 2.2rem; margin-bottom: 12px; color: #5eead4; }
-        .level-card h2 { color: #f8fafc; margin-bottom: 8px; font-size: 1.25rem; }
-        .level-card p { color: #94a3b8; font-size: 0.95rem; }
-
-        /* CODE VIEW */
-        .back-btn {
-            background: transparent; border: 1px solid #5eead4; color: #5eead4;
-            padding: 10px 20px; border-radius: 8px; cursor: pointer;
-            font-family: 'JetBrains Mono', monospace; font-size: 1rem;
-            margin-bottom: 30px; transition: all 0.2s;
-        }
-        .back-btn:hover { background: rgba(94, 234, 212, 0.1); }
-
-        .code-container {
-            background: #1e1e1e; border-radius: 12px; overflow: hidden;
-            border: 1px solid #333; margin-bottom: 30px;
-        }
-        .code-header {
-            background: #2d2d2d; padding: 10px 20px; font-family: 'JetBrains Mono', monospace;
-            color: #94a3b8; font-size: 0.9rem; border-bottom: 1px solid #111;
-            display: flex; justify-content: space-between;
-        }
-        pre { margin: 0; padding: 20px; font-family: 'JetBrains Mono', monospace; overflow-x: auto; font-size: 15px;}
-        code .keyword { color: #c678dd; }
-        code .type { color: #e5c07b; }
-        code .func { color: #61afef; }
-        code .string { color: #98c379; }
-        code .comment { color: #5c6370; font-style: italic; }
-
-        .problem-desc {
-            background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444;
-            padding: 20px; border-radius: 0 8px 8px 0; margin-bottom: 30px;
+        .level-icon {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+            color: #5eead4;
         }
 
-        /* HINT SECTION */
-        .hint-btn {
-            background: #deff9a; color: #000; border: none; font-weight: 700;
-            padding: 15px 30px; border-radius: 8px; cursor: pointer; font-size: 1.1rem;
-            font-family: 'Urbanist', sans-serif; display: block; width: 100%; transition: all 0.2s;
+        .level-card h2 {
+            color: #f8fafc;
+            margin-bottom: 8px;
+            font-size: 1.25rem;
         }
-        .hint-btn:hover { background: #bfe667; }
 
-        .hint-content {
-            display: none; margin-top: 30px; background: #111418; border: 1px solid #2d3748;
-            border-radius: 12px; padding: 30px; animation: fadeIn 0.4s ease-in-out;
+        .level-card p {
+            color: #94a3b8;
+            font-size: 0.95rem;
         }
-        .hint-step { margin-bottom: 20px; }
-        .hint-step h3 { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
-        .h-ghost { color: #f87171; }
-        .h-truth { color: #5eead4; }
-        .h-rebuild { color: #deff9a; }
-        
-        .rebuild-box {
-            background: rgba(94, 234, 212, 0.05); border: 1px solid #5eead4;
-            padding: 20px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 1rem;
-        }
-        .rebuild-box span { color: #deff9a; }
 
-        .framework-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
-            margin-bottom: 40px;
+        /* POPUP / MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.72);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
         }
-        .framework-step {
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.25s ease-in-out;
+        }
+
+        .modal-box {
+            width: min(720px, 100%);
             background: #111418;
             border: 1px solid #2d3748;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            font-family: 'JetBrains Mono', monospace;
-        }
-        .framework-step h4 {
-            color: #deff9a;
-            margin: 0 0 10px 0;
-            font-size: 0.9rem;
-        }
-        .framework-step p {
-            color: #94a3b8;
-            font-size: 0.9rem;
-            margin: 0;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.65);
+            overflow: hidden;
         }
 
+        .modal-header {
+            padding: 22px 26px;
+            border-bottom: 1px solid #2d3748;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #deff9a;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.35rem;
+        }
+
+        .modal-header p {
+            margin: 8px 0 0 0;
+            color: #5eead4;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: 1px solid #5eead4;
+            color: #5eead4;
+            border-radius: 8px;
+            width: 38px;
+            height: 38px;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: rgba(94, 234, 212, 0.12);
+        }
+
+        .modal-body {
+            padding: 26px;
+        }
+
+        .modal-body h3 {
+            color: #f8fafc;
+            margin: 0 0 10px 0;
+            font-size: 1.05rem;
+        }
+
+        .modal-body p {
+            color: #cbd5e1;
+            margin: 0 0 18px 0;
+        }
+
+        .modal-body ul {
+            margin: 0 0 22px 20px;
+            padding: 0;
+            color: #cbd5e1;
+        }
+
+        .modal-body li {
+            margin-bottom: 8px;
+        }
+
+        .prompt-box {
+            background: rgba(94, 234, 212, 0.06);
+            border: 1px solid rgba(94, 234, 212, 0.55);
+            border-radius: 10px;
+            padding: 18px;
+            font-family: 'JetBrains Mono', monospace;
+            color: #deff9a;
+        }
+
+        @media (max-width: 900px) {
+            .framework-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .level-grid {
+                flex-wrap: wrap;
+            }
+
+            header h1 {
+                font-size: 2.2rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -185,31 +292,39 @@
 <div class="container">
     <header>
         <h1>First Principles <span style="color: white;">|</span> Debugger</h1>
-        <p>>_ Three 90-minute workshop challenges for debugging assumptions in code.</p>
-        
+        <p>>_ 90-minute workshop challenges for debugging assumptions in code and real-life.</p>
     </header>
 
     <div id="menu-view" class="view active">
         <div class="framework-grid">
-            <div class="framework-step">
+            <div class="framework-step" tabindex="0" role="button" onclick="openModal(1)" onkeydown="handleStepKey(event, 1)">
                 <h4>1. DEFINE</h4>
                 <p>Identify the core goal</p>
+                <small>Click for details</small>
             </div>
-            <div class="framework-step">
+
+            <div class="framework-step" tabindex="0" role="button" onclick="openModal(2)" onkeydown="handleStepKey(event, 2)">
                 <h4>2. HUNT</h4>
                 <p>Expose assumptions</p>
+                <small>Click for details</small>
             </div>
-            <div class="framework-step">
+
+            <div class="framework-step" tabindex="0" role="button" onclick="openModal(3)" onkeydown="handleStepKey(event, 3)">
                 <h4>3. STRIP</h4>
                 <p>Find basic truths</p>
+                <small>Click for details</small>
             </div>
-            <div class="framework-step">
+
+            <div class="framework-step" tabindex="0" role="button" onclick="openModal(4)" onkeydown="handleStepKey(event, 4)">
                 <h4>4. REBUILD</h4>
                 <p>Reformulate logic</p>
+                <small>Click for details</small>
             </div>
-            <div class="framework-step">
+
+            <div class="framework-step" tabindex="0" role="button" onclick="openModal(5)" onkeydown="handleStepKey(event, 5)">
                 <h4>5. ACTION</h4>
                 <p>One 24h task</p>
+                <small>Click for details</small>
             </div>
         </div>
 
@@ -217,18 +332,21 @@
             <a href="case1.html" class="level-card card-lvl1">
                 <i class="fa-solid fa-scissors level-icon"></i>
                 <h2>Case One: Guided Debugging</h2>
-                <p>Four guided debugging exercises (string parsing, concurrency, memory).</p>
+                <p>Four guided debugging exercises: string parsing, concurrency, and memory.</p>
             </a>
+
             <a href="index2.html" class="level-card card-lvl2">
                 <i class="fa-solid fa-utensils level-icon"></i>
                 <h2>Case Two: No-Guidance Challenges</h2>
-                <p>Self-directed debugging problems to practice first-principles.</p>
+                <p>Self-directed debugging problems to practice first-principles thinking.</p>
             </a>
+
             <a href="index3.html" class="level-card card-lvl3">
                 <i class="fa-solid fa-user level-icon"></i>
                 <h2>Personal Case: Life Challenges</h2>
                 <p>Decision and career-oriented exercises for reflection.</p>
             </a>
+
             <a href="index4.html" class="level-card card-lvl1">
                 <i class="fa-solid fa-rocket level-icon"></i>
                 <h2>Raptor Case: Real-World Study</h2>
@@ -236,8 +354,133 @@
             </a>
         </div>
     </div>
-
 </div>
+
+<div id="step-modal" class="modal-overlay" onclick="closeModalOnOverlay(event)">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-header">
+            <div>
+                <h2 id="modal-title"></h2>
+                <p id="modal-subtitle"></p>
+            </div>
+            <button class="close-btn" onclick="closeModal()" aria-label="Close popup">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <h3>What this means</h3>
+            <p id="modal-description"></p>
+
+            <h3>Use it in debugging</h3>
+            <ul id="modal-list"></ul>
+
+            <h3>Workshop prompt</h3>
+            <div id="modal-prompt" class="prompt-box"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const stepContent = {
+        1: {
+            title: "1. DEFINE",
+            subtitle: "Clarify what you are really trying to achieve.",
+            description: "Before solving anything, make the goal explicit. A clear goal prevents you from optimizing the wrong thing or getting stuck in surface-level details.",
+            bullets: [
+                "Describe the desired outcome in one simple sentence.",
+                "Separate the real goal from the current method you are using.",
+                "Ask: what would success look like if this were solved well?"
+            ],
+            prompt: "Write: “The real goal is to ______.”"
+        },
+        2: {
+            title: "2. HUNT",
+            subtitle: "Find the assumptions you are treating as facts.",
+            description: "Many problems feel stuck because hidden assumptions limit the possible solutions. This step is about noticing what you believe must be true.",
+            bullets: [
+                "List what you are assuming about the situation, people, resources, timing, or constraints.",
+                "Ask which assumptions came from habit, fear, convention, or past experience.",
+                "Challenge each assumption with: is this definitely true?"
+            ],
+            prompt: "Write 3 assumptions, then ask: “What if this is not true?”"
+        },
+        3: {
+            title: "3. STRIP",
+            subtitle: "Reduce the situation to basic truths.",
+            description: "Strip away opinions, habits, and inherited explanations until only the things you know for sure remain. These basic truths are the foundation for better thinking.",
+            bullets: [
+                "Keep only facts you can observe, verify, or directly experience.",
+                "Remove statements that begin with “I guess,” “people always,” or “it has to be.”",
+                "Look for what remains true even if your current plan changes."
+            ],
+            prompt: "Write: “What I know for sure is ______.”"
+        },
+        4: {
+            title: "4. REBUILD",
+            subtitle: "Create a better path from the basic truths.",
+            description: "Once you have the basic truths, rebuild your approach from scratch. The goal is not to improve the old plan slightly, but to create a clearer path based on what is actually true.",
+            bullets: [
+                "Ask what solution naturally follows from the facts.",
+                "Look for simpler options you ignored before.",
+                "Design the next approach without copying the old one automatically."
+            ],
+            prompt: "Write: “Given these truths, a better approach could be ______.”"
+        },
+        5: {
+            title: "5. ACTION",
+            subtitle: "Choose one concrete next step.",
+            description: "Thinking becomes useful when it leads to action. End with one small, specific task that creates movement or tests your new understanding.",
+            bullets: [
+                "Choose one action you can complete within 24 hours.",
+                "Make it specific enough that you can clearly say whether it is done.",
+                "Use the action to test, learn, decide, or move forward."
+            ],
+            prompt: "Write: “In the next 24 hours, I will ______.”"
+        }
+    };
+
+    function openModal(stepNumber) {
+        const data = stepContent[stepNumber];
+
+        document.getElementById("modal-title").textContent = data.title;
+        document.getElementById("modal-subtitle").textContent = data.subtitle;
+        document.getElementById("modal-description").textContent = data.description;
+        document.getElementById("modal-prompt").textContent = data.prompt;
+
+        const list = document.getElementById("modal-list");
+        list.innerHTML = "";
+
+        data.bullets.forEach(item => {
+            const li = document.createElement("li");
+            li.textContent = item;
+            list.appendChild(li);
+        });
+
+        document.getElementById("step-modal").classList.add("active");
+    }
+
+    function closeModal() {
+        document.getElementById("step-modal").classList.remove("active");
+    }
+
+    function closeModalOnOverlay(event) {
+        if (event.target.id === "step-modal") {
+            closeModal();
+        }
+    }
+
+    function handleStepKey(event, stepNumber) {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openModal(stepNumber);
+        }
+    }
+
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Escape") {
+            closeModal();
+        }
+    });
+</script>
 
 </body>
 </html>
