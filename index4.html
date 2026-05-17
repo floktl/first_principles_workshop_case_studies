@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raptor Engine: First Principles Case Study</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background-color: #0a0a0c;
+            color: #e2e8f0;
+            font-family: 'Urbanist', sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at 10% 10%, rgba(94, 234, 212, 0.03) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 90%, rgba(222, 255, 154, 0.03) 0%, transparent 40%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header { text-align: center; margin-bottom: 50px; }
+        header h1 { color: #deff9a; font-size: 3rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: -1px; }
+        header p { color: #5eead4; font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; }
+
+        .view { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .level-card {
+            background-color: #111418;
+            border: 1px solid #2d3748;
+            border-radius: 12px;
+            padding: 40px 30px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-card:hover { transform: translateY(-5px); border-color: #deff9a; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .level-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, #f59e0b, #f97316);
+        }
+
+        .level-icon { font-size: 3rem; margin-bottom: 20px; color: #f59e0b; }
+        .level-card h2 { color: #f8fafc; margin-bottom: 10px; font-size: 1.8rem; }
+        .level-card p { color: #94a3b8; font-size: 1rem; }
+
+        .back-btn {
+            background: transparent; border: 1px solid #5eead4; color: #5eead4;
+            padding: 10px 20px; border-radius: 8px; cursor: pointer;
+            font-family: 'JetBrains Mono', monospace; font-size: 1rem;
+            margin-bottom: 30px; transition: all 0.2s;
+        }
+        .back-btn:hover { background: rgba(94, 234, 212, 0.1); }
+
+        .case-section {
+            background: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .case-section h3 {
+            margin-top: 0;
+            color: #f8fafc;
+            border-bottom: 2px solid #f59e0b;
+            padding-bottom: 15px;
+        }
+
+        .case-section p {
+            color: #cbd5e1;
+        }
+
+        .hint-btn {
+            background: #deff9a; color: #000; border: none; font-weight: 700;
+            padding: 15px 30px; border-radius: 8px; cursor: pointer; font-size: 1.1rem;
+            font-family: 'Urbanist', sans-serif; display: block; width: 100%; transition: all 0.2s; margin-bottom: 20px;
+        }
+        .hint-btn:hover { background: #bfe667; }
+
+        .hint-content {
+            display: none; margin-top: 10px; background: #111418; border: 1px solid #2d3748;
+            border-radius: 12px; padding: 25px; animation: fadeIn 0.4s ease-in-out;
+        }
+        .hint-step { margin-bottom: 18px; }
+        .hint-step h4 { font-family: 'JetBrains Mono', monospace; font-size: 1.05rem; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .h-problem { color: #ef4444; }
+        .h-assumption { color: #f87171; }
+        .h-strip { color: #f59e0b; }
+        .h-truth { color: #5eead4; }
+        .h-rebuild { color: #deff9a; }
+        
+        .solution-box {
+            background: rgba(94, 234, 212, 0.05); border: 1px solid #5eead4;
+            padding: 20px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.95rem;
+            margin-top: 15px;
+        }
+        .solution-box span { color: #deff9a; }
+
+        .timeline {
+            border-left: 3px solid #f59e0b;
+            padding-left: 20px;
+            margin: 20px 0;
+        }
+        .timeline-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(245, 158, 11, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid #f59e0b;
+        }
+        .timeline-item strong { color: #f59e0b; }
+
+        .link-row {
+            margin-top: 40px;
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .link-row a {
+            color: #5eead4;
+            text-decoration: none;
+            border: 1px solid #5eead4;
+            padding: 10px 18px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .link-row a:hover { background: rgba(94, 234, 212, 0.08); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Raptor Engine <span style="color: white;">|</span> First Principles Case Study</h1>
+        <p>>_ How SpaceX redesigned a rocket engine by questioning every assumption.</p>
+        <p style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.95rem;"><a href="index.html" style="color: #5eead4; text-decoration: none;">Back to guided coding challenges</a> · <a href="index2.html" style="color: #5eead4; text-decoration: none;">Back to coding challenges</a> · <a href="index3.html" style="color: #5eead4; text-decoration: none;">Back to personal challenges</a></p>
+    </header>
+
+    <div id="menu-view" class="view active">
+        <div class="level-grid">
+            <div class="level-card" onclick="showLevel('raptor1')">
+                <i class="fa-solid fa-fire level-icon"></i>
+                <h2>Problem: Turbine Blade Failure</h2>
+                <p>Early Raptor engines experienced catastrophic turbine erosion and cavitation damage.</p>
+            </div>
+            <div class="level-card" onclick="showLevel('raptor2')">
+                <i class="fa-solid fa-gears level-icon"></i>
+                <h2>Problem: Cooling System Complexity</h2>
+                <p>The original design was over-engineered with multiple redundant cooling paths.</p>
+            </div>
+            <div class="level-card" onclick="showLevel('raptor3')">
+                <i class="fa-solid fa-rocket level-icon"></i>
+                <h2>Problem: Chamber Pressure Limits</h2>
+                <p>Engine couldn't scale to the performance needed without understanding fundamental constraints.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="raptor1" class="view">
+        <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Cases</button>
+        
+        <div class="case-section">
+            <h3><i class="fa-solid fa-exclamation"></i> The Problem</h3>
+            <p>Raptor 1 turbopumps were failing prematurely. Turbine blades were eroding, cavitation was destroying pump internals, and test campaigns kept ending in catastrophic failures. The team was adding more protective coatings, increasing material thickness, and designing more complex cooling circuits—but the problem persisted.</p>
+        </div>
+
+        <button class="hint-btn" onclick="revealHint('hint-r1')">How They Debugged It <i class="fa-solid fa-magnifying-glass"></i></button>
+        <div id="hint-r1" class="hint-content">
+            <div class="hint-step">
+                <h4 class="h-assumption"><i class="fa-solid fa-ghost"></i> The Assumption</h4>
+                <p>The team assumed the blade material and coatings were the limiting factors. They were throwing increasingly sophisticated materials and thicker designs at the problem.</p>
+            </div>
+
+            <div class="hint-step">
+                <h4 class="h-strip"><i class="fa-solid fa-magnifying-glass"></i> STRIP: The Questions Asked</h4>
+                <p><strong>What is actually happening to the blade?</strong> Instead of assuming erosion, they measured the cavitation nuclei in the fluid. <strong>Where do cavitation bubbles form?</strong> Not randomly—they form at specific low-pressure points. <strong>Why are there low-pressure points?</strong> Because the impeller design had unnecessary geometry creating turbulence. <strong>Can we eliminate the turbulence source itself?</strong></p>
+            </div>
+
+            <div class="hint-step">
+                <h4 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h4>
+                <p>Cavitation isn't a material problem—it's a fluid dynamics problem. The turbopump impeller had redundant blade passages and complex geometry that created low-pressure vortices. The real issue wasn't "how to protect against cavitation" but "why are we creating cavitation in the first place?"</p>
+            </div>
+
+            <div class="hint-step">
+                <h4 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Rebuild</h4>
+                <div class="solution-box">
+                    <strong>Before:</strong> Complex impeller geometry with thick blade coatings and redundant pump stages.<br><br>
+                    <strong>After:</strong> Simplified impeller design with <span>fewer blade passages, smoother flow paths, and lower fluid velocities</span>. Remove unnecessary geometry that created turbulence.
+                </div>
+            </div>
+
+            <div class="hint-step">
+                <h4 class="h-truth"><i class="fa-solid fa-lightbulb"></i> The Lesson</h4>
+                <p>When a system fails, the instinct is to add protection. The first-principles approach asks: why does it need protection? Can we remove the root cause instead?</p>
+            </div>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <strong>2016-2018:</strong> Raptor 1 turbopump failures during testing. Coatings and materials upgrades attempted.
+            </div>
+            <div class="timeline-item">
+                <strong>2018:</strong> Team questioned the impeller design itself. Tested simplified geometry.
+            </div>
+            <div class="timeline-item">
+                <strong>2019:</strong> Raptor 1 passed full-duration test fires. Simplified design was the solution.
+            </div>
+            <div class="timeline-item">
+                <strong>2020+:</strong> Raptor 2 incorporated these learnings from the start—even simpler, higher performance.
+            </div>
+        </div>
+    </div>
+
+    <div id="raptor2" class="view">
+        <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Cases</button>
+        
+        <div class="case-section">
+            <h3><i class="fa-solid fa-exclamation"></i> The Problem</h3>
+            <p>Raptor's cooling system was a labyrinth. The engine had multiple parallel cooling passages, redundant heat exchangers, and backup systems for backup systems. Every change to improve efficiency required redesigning three other subsystems. The engine was becoming harder to iterate on, not easier to build.</p>
+        </div>
+
+        <button class="hint-btn" onclick="revealHint('hint-r2')">How They Debugged It <i class="fa-solid fa-magnifying-glass"></i></button>
+        <div id="hint-r2" class="hint-content">
+            <div class="hint-step">
+                <h4 class="h-assumption"><i class="fa-solid fa-ghost"></i> The Assumption</h4>
+                <p>The team assumed that redundancy and multiple parallel paths were necessary for reliability and performance margin. They were optimizing each cooling passage independently.</p>
+            </div>
+
+            <div class="hint-step">
+                <h4 class="h-strip"><i class="fa-solid fa-magnifying-glass"></i> STRIP: The Questions Asked</h4>
+                <p><strong>What is the cooling system actually trying to do?</strong> Cool specific regions. <strong>How many cooling paths do we actually need?</strong> One path per critical region, not multiple for "margin." <strong>Which subsystems are doing the same job?</strong> Three heat exchangers doing overlapping work. <strong>What happens if we delete the redundancy and trust the single path?</strong></p>
+            </div>
+
+            <div class="hint-step">
+                <h4 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h4>
+                <p>Complexity and redundancy are not the same as reliability. A system with 10 subsystems doing similar tasks is harder to understand, harder to test, and easier to break. A system with 3 well-designed subsystems that each do one thing is more reliable and faster to iterate.</p>
+            </div>
+
+            <div class="hint-step">
+                <h4 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Rebuild</h4>
+                <div class="solution-box">
+                    <strong>Before:</strong> Multiple parallel cooling passages, redundant heat exchangers, backup systems.<br><br>
+                    <strong>After:</strong> <span>Single dominant cooling path with elegant design</span>. One cooling jacket per component. Trust the design instead of adding margin through duplication.
+                </div>
+            </div>
+
+            <div class="hint-step">
+                <h4 class="h-truth"><i class="fa-solid fa-lightbulb"></i> The Lesson</h4>
+                <p>Removing unnecessary parts isn't about cutting corners—it's about removing cognitive and physical burden. Simpler systems iterate faster, fail more clearly, and teach you more about what's actually needed.</p>
+            </div>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <strong>2016-2017:</strong> Raptor 1 cooling system design was over-parameterized. 40+ design variables in cooling alone.
+            </div>
+            <div class="timeline-item">
+                <strong>2017-2018:</strong> Each test revealed interactions between cooling paths. Changes became increasingly difficult.
+            </div>
+            <div class="timeline-item">
+                <strong>2018:</strong> Design team deleted redundant cooling paths. Eliminated overlapping heat exchangers.
+            </div>
+            <div class="timeline-item">
+                <strong>2019-2020:</strong> Raptor 2 had half the cooling system complexity with better thermal performance.
+            </div>
+        </div>
+    </div>
+
+    <div id="raptor3" class="view">
+        <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Cases</button>
+        
+        <div class="case-section">
+            <h3><i class="fa-solid fa-exclamation"></i> The Problem</h3>
+            <p>Raptor was hitting a chamber pressure plateau. Engineers were adding thicker walls, stronger materials, and more sophisticated injector designs—but performance gains were diminishing. To get to Starship's requirements, they needed fundamentally higher chamber pressure. But every attempt to push higher led to failures no one could explain.</p>
+        </div>
+
+        <button class="hint-btn" onclick="revealHint('hint-r3')">How They Debugged It <i class="fa-solid fa-magnifying-glass"></i></button>
+        <div id="hint-r3" class="hint-content">
+            <div class="hint-step">
+                <h4 class="h-assumption"><i class="fa-solid fa-ghost"></i> The Assumption</h4>
+                <p>The team assumed chamber pressure was limited by material strength. They designed around that constraint and optimized materials and geometry. But they never questioned whether that constraint was real.</p>
+            </div>
+
+            <div class="hint-step">
+                <h4 class="h-strip"><i class="fa-solid fa-magnifying-glass"></i> STRIP: The Questions Asked</h4>
+                <p><strong>Why does pressure spike at ignition?</strong> Because the combustion happens faster than the injector can deliver propellant. <strong>What if we changed the propellant injection pattern?</strong> What if we injected differently to stabilize the pressure rise? <strong>What are we actually constraining?</strong> Material strength, yes—but also combustion instability. Are both real limits, or is one driving the other?</p>
+            </div>
+
+            <div class="hint-step">
+                <h4 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h4>
+                <p>The real limit wasn't material strength—it was combustion instability. Pressure oscillations were causing failures that everyone attributed to "metal fatigue." By redesigning the injector to stabilize combustion, they removed the oscillations. Suddenly, higher chamber pressure became possible without stronger materials.</p>
+            </div>
+
+            <div class="hint-step">
+                <h4 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Rebuild</h4>
+                <div class="solution-box">
+                    <strong>Before:</strong> Assumed limit was material strength. Designed thicker walls, used stronger alloys.<br><br>
+                    <strong>After:</strong> <span>Redesigned injector for combustion stability</span>. Smoother pressure rise, fewer oscillations. Pressure spiked to higher levels, but without the destructive oscillations. Same material, higher safe pressure.
+                </div>
+            </div>
+
+            <div class="hint-step">
+                <h4 class="h-truth"><i class="fa-solid fa-lightbulb"></i> The Lesson</h4>
+                <p>When you can't improve a system, ask whether you're optimizing the right constraint. The binding constraint might be invisible because no one questioned it. Find and address the real limit, not the proxy.</p>
+            </div>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <strong>2016-2017:</strong> Raptor 1 chamber pressure plateau around 250 bar. Every push higher caused failures.
+            </div>
+            <div class="timeline-item">
+                <strong>2017:</strong> Failures attributed to "chamber metal fatigue." Designed thicker walls, tested new materials.
+            </div>
+            <div class="timeline-item">
+                <strong>2017-2018:</strong> Injector redesign to stabilize combustion. Pressure oscillations measured and reduced.
+            </div>
+            <div class="timeline-item">
+                <strong>2018-2019:</strong> Chamber pressure climbed to 300+ bar safely. Raptor 2 achieved 330 bar nominal with optimized injector.
+            </div>
+        </div>
+    </div>
+
+    <div class="link-row">
+        <a href="index.html">Guided coding challenges</a>
+        <a href="index2.html">No-guidance coding challenges</a>
+        <a href="index3.html">Personal life challenges</a>
+    </div>
+</div>
+
+<script>
+    function showLevel(levelId) {
+        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+        document.getElementById(levelId).classList.add('active');
+    }
+
+    function goBack() {
+        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+        document.getElementById('menu-view').classList.add('active');
+    }
+
+    function revealHint(hintId) {
+        const hintEl = document.getElementById(hintId);
+        hintEl.style.display = 'block';
+        hintEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+</script>
+
+</body>
+</html>

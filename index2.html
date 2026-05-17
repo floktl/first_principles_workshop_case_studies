@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workshop Debugger — No Guidance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background-color: #0a0a0c;
+            color: #e2e8f0;
+            font-family: 'Urbanist', sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at 10% 10%, rgba(94, 234, 212, 0.03) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 90%, rgba(222, 255, 154, 0.03) 0%, transparent 40%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header { text-align: center; margin-bottom: 50px; }
+        header h1 { color: #deff9a; font-size: 3rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: -1px; }
+        header p { color: #5eead4; font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; }
+
+        .view { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .level-card {
+            background-color: #111418;
+            border: 1px solid #2d3748;
+            border-radius: 12px;
+            padding: 40px 30px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-card:hover { transform: translateY(-5px); border-color: #deff9a; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .level-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+        }
+        .card-lvl1::before { background: #60a5fa; }
+        .card-lvl2::before { background: #facc15; }
+        .card-lvl3::before { background: #f87171; }
+
+        .level-icon { font-size: 3rem; margin-bottom: 20px; color: #5eead4; }
+        .level-card h2 { color: #f8fafc; margin-bottom: 10px; font-size: 1.8rem; }
+        .level-card p { color: #94a3b8; font-size: 1rem; }
+
+        .back-btn {
+            background: transparent; border: 1px solid #5eead4; color: #5eead4;
+            padding: 10px 20px; border-radius: 8px; cursor: pointer;
+            font-family: 'JetBrains Mono', monospace; font-size: 1rem;
+            margin-bottom: 30px; transition: all 0.2s;
+        }
+        .back-btn:hover { background: rgba(94, 234, 212, 0.1); }
+
+        .code-container {
+            background: #1e1e1e; border-radius: 12px; overflow: hidden;
+            border: 1px solid #333; margin-bottom: 30px;
+        }
+        .code-header {
+            background: #2d2d2d; padding: 10px 20px; font-family: 'JetBrains Mono', monospace;
+            color: #94a3b8; font-size: 0.9rem; border-bottom: 1px solid #111;
+            display: flex; justify-content: space-between;
+        }
+        pre { margin: 0; padding: 20px; font-family: 'JetBrains Mono', monospace; overflow-x: auto; font-size: 15px; }
+        code .keyword { color: #c678dd; }
+        code .type { color: #e5c07b; }
+        code .func { color: #61afef; }
+        code .string { color: #98c379; }
+        code .comment { color: #5c6370; font-style: italic; }
+
+        .problem-desc {
+            background: rgba(94, 234, 212, 0.08); border-left: 4px solid #5eead4;
+            padding: 20px; border-radius: 0 8px 8px 0; margin-bottom: 30px;
+        }
+
+        .hint-btn {
+            background: #deff9a; color: #000; border: none; font-weight: 700;
+            padding: 15px 30px; border-radius: 8px; cursor: pointer; font-size: 1.1rem;
+            font-family: 'Urbanist', sans-serif; display: block; width: 100%; transition: all 0.2s;
+        }
+        .hint-btn:hover { background: #bfe667; }
+
+        .hint-content {
+            display: none; margin-top: 30px; background: #111418; border: 1px solid #2d3748;
+            border-radius: 12px; padding: 30px; animation: fadeIn 0.4s ease-in-out;
+        }
+        .hint-step { margin-bottom: 20px; }
+        .hint-step h3 { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .h-ghost { color: #f87171; }
+        .h-truth { color: #5eead4; }
+        .h-rebuild { color: #deff9a; }
+        .rebuild-box {
+            background: rgba(94, 234, 212, 0.05); border: 1px solid #5eead4;
+            padding: 20px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 1rem;
+        }
+        .rebuild-box span { color: #deff9a; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Debugger Workshop</h1>
+        <p>>_ Three additional no-guidance challenges for the workshop.</p>
+        <p style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.95rem;"><a href="index.html" style="color: #5eead4; text-decoration: none;">Return to the guided challenge set ←</a> · <a href="index3.html" style="color: #5eead4; text-decoration: none;">Jump to personal life challenges →</a> · <a href="index4.html" style="color: #f59e0b; text-decoration: none;">See Raptor engine case study →</a></p>
+    </header>
+
+    <div id="menu-view" class="view active">
+        <div class="level-grid">
+            <div class="level-card card-lvl1" onclick="showLevel('lvl4')">
+                <i class="fa-solid fa-brain level-icon"></i>
+                <h2>Level 4: Memory boundary</h2>
+                <p>Identify the out-of-bounds write in a buffer copy routine.</p>
+            </div>
+            <div class="level-card card-lvl2" onclick="showLevel('lvl5')">
+                <i class="fa-solid fa-network-wired level-icon"></i>
+                <h2>Level 5: Protocol state</h2>
+                <p>Find the invalid state transition in a message parser.</p>
+            </div>
+            <div class="level-card card-lvl3" onclick="showLevel('lvl6')">
+                <i class="fa-solid fa-clock level-icon"></i>
+                <h2>Level 6: Race condition</h2>
+                <p>Spot the shared resource access that can be reordered.</p>
+            </div>
+            <div class="level-card card-lvl1" onclick="showLevel('lvl7')">
+                <i class="fa-solid fa-explosion level-icon"></i>
+                <h2>Level 7: Bitwise logic</h2>
+                <p>Find the mask calculation bug causing wrong permission checks.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="lvl4" class="view">
+        <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Levels</button>
+        <div class="problem-desc">
+            <strong>The Report:</strong> "The routine sometimes corrupts adjacent memory when processing long input strings."
+        </div>
+        <div class="code-container">
+            <div class="code-header"><span>buffer_copy.c</span><span>C</span></div>
+            <pre><code><span class="type">void</span> <span class="func">copy_input</span>(<span class="type">char</span> *dest, <span class="type">const</span> <span class="type">char</span> *src, <span class="type">int</span> max)
+{
+    <span class="type">int</span> i = <span class="string">0</span>;
+
+    <span class="keyword">while</span> (src[i] != <span class="string">'\0'</span>)
+    {
+        dest[i] = src[i];
+        i++;
+    }
+    dest[i] = <span class="string">'\0'</span>;
+}
+</code></pre>
+        </div>
+        <button class="hint-btn" onclick="revealHint('hint4')">Show hint</button>
+        <div id="hint4" class="hint-content">
+            <div class="hint-step">
+                <h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3>
+                <p>The code assumes the destination buffer is always large enough for the source string.</p>
+            </div>
+            <div class="hint-step">
+                <h3 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h3>
+                <p>C does not check lengths for you. If the copy loop ignores the provided <code>max</code> value, it can write past the end of <code>dest</code> even though the source looks valid.</p>
+            </div>
+            <div class="hint-step">
+                <h3 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Fix Idea</h3>
+                <div class="rebuild-box">"Because I know <span>[the size limit is the only guard here]</span>, my next step is to <span>[use <code>max</code> when iterating and stop before the buffer ends]</span> instead of assuming the source length is safe."</div>
+            </div>
+            <div class="hint-step">
+                <h3 class="h-truth"><i class="fa-solid fa-lightbulb"></i> Finding Basic Truths</h3>
+                <p>Start by asking what the function can rely on. If a parameter is named <code>max</code>, verify whether it is actually used by the loop. If not, challenge that assumption first.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="lvl5" class="view">
+        <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Levels</button>
+        <div class="problem-desc">
+            <strong>The Report:</strong> "A client message sometimes causes the parser to reject the next valid request."
+        </div>
+        <div class="code-container">
+            <div class="code-header"><span>protocol.c</span><span>C</span></div>
+            <pre><code><span class="type">void</span> <span class="func">process_message</span>(<span class="type">int</span> state, <span class="type">char</span> *message)
+{
+    <span class="keyword">if</span> (state == <span class="string">0</span>)
+        <span class="func">handle_init</span>(message);
+    <span class="keyword">else if</span> (state == <span class="string">1</span>)
+        <span class="func">handle_data</span>(message);
+    <span class="keyword">else if</span> (state == <span class="string">2</span>)
+        <span class="func">handle_close</span>(message);
+
+    state++;
+}
+</code></pre>
+        </div>
+        <button class="hint-btn" onclick="revealHint('hint5')">Show hint</button>
+        <div id="hint5" class="hint-content">
+            <div class="hint-step">
+                <h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3>
+                <p>The parser assumes the local <code>state</code> variable change will persist outside the function.</p>
+            </div>
+            <div class="hint-step">
+                <h3 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h3>
+                <p>In C, passing an integer by value creates a separate copy. Incrementing that copy does not alter the caller's state.</p>
+            </div>
+            <div class="hint-step">
+                <h3 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Fix Idea</h3>
+                <div class="rebuild-box">"Because I know <span>[state is copied into the function]</span>, my next step is to <span>[return the new state or update a state reference] rather than incrementing a local copy only.</span>"</div>
+            </div>
+            <div class="hint-step">
+                <h3 class="h-truth"><i class="fa-solid fa-lightbulb"></i> Finding Basic Truths</h3>
+                <p>Look for where values enter and exit the function. If a value is used but never returned or stored through a pointer, it may not survive the function call.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="lvl6" class="view">
+        <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Levels</button>
+        <div class="problem-desc">
+            <strong>The Report:</strong> "Under load, the counter occasionally skips values and two threads appear to write the same result."
+        </div>
+        <div class="code-container">
+            <div class="code-header"><span>counter.c</span><span>C</span></div>
+            <pre><code><span class="type">void</span> <span class="func">increment</span>(<span class="type">int</span> *counter)
+{
+    <span class="type">int</span> value = *counter;
+    value++;
+    *counter = value;
+}
+</code></pre>
+        </div>
+        <button class="hint-btn" onclick="revealHint('hint6')">Show hint</button>
+        <div id="hint6" class="hint-content">
+            <div class="hint-step">
+                <h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3>
+                <p>The code assumes the two read/write operations on <code>*counter</code> happen together as one atomic step.</p>
+            </div>
+            <div class="hint-step">
+                <h3 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h3>
+                <p>Read, increment, and write are separate operations. Another thread can change <code>*counter</code> between the load and the store.</p>
+            </div>
+            <div class="hint-step">
+                <h3 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Fix Idea</h3>
+                <div class="rebuild-box">"Because I know <span>[the counter is shared and not protected]</span>, my next step is to <span>[guard the update with a lock or use an atomic increment] so the read-modify-write sequence cannot interleave.</span>"</div>
+            </div>
+            <div class="hint-step">
+                <h3 class="h-truth"><i class="fa-solid fa-lightbulb"></i> Finding Basic Truths</h3>
+                <p>Ask whether two lines rely on the same memory location. If they do, consider what else could happen between them and whether that changes the result.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="lvl7" class="view">
+        <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Levels</button>
+        <div class="problem-desc">
+            <strong>The Report:</strong> "The permission system denies valid access to users. When the config sets <code>PERMS = 0b1010</code>, users with rights <code>0b1001</code> should pass, but they don't. The mask calculation looks correct."
+        </div>
+        <div class="code-container">
+            <div class="code-header"><span>permissions.c</span><span>C</span></div>
+            <pre><code><span class="type">int</span> <span class="func">check_access</span>(<span class="type">int</span> user_perms, <span class="type">int</span> required)
+{
+    <span class="type">int</span> mask = (<span class="string">1</span> << required);
+    
+    <span class="keyword">if</span> ((user_perms & mask) != <span class="string">0</span>)
+        <span class="keyword">return</span> (<span class="string">1</span>); <span class="comment">// Access granted</span>
+    <span class="keyword">else</span>
+        <span class="keyword">return</span> (<span class="string">0</span>); <span class="comment">// Access denied</span>
+}
+</code></pre>
+        </div>
+        <button class="hint-btn" onclick="revealHint('hint7')">Show hint</button>
+        <div id="hint7" class="hint-content">
+            <div class="hint-step">
+                <h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3>
+                <p>The code assumes that a single bit shift <code>(1 << required)</code> and a single AND operation will correctly validate permissions.</p>
+            </div>
+            <div class="hint-step">
+                <h3 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h3>
+                <p><code>required</code> is being treated as a bit position, but in permission systems, <code>required</code> is usually a bitmask itself (e.g., <code>0b1010</code>). The function is shifting a 1 by the entire mask value, not checking if the mask bits are present in <code>user_perms</code>.</p>
+            </div>
+            <div class="hint-step">
+                <h3 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Fix Idea</h3>
+                <div class="rebuild-box">"Because I know <span>[the mask is already a bit pattern, not a position]</span>, my next step is to <span>[AND the user_perms directly with the mask and check if ALL required bits are set]</span>, rather than <span>[shifting a single bit by the mask value]</span>."</div>
+            </div>
+        </div>
+    </div>
+    }
+
+    function goBack() {
+        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+        document.getElementById('menu-view').classList.add('active');
+    }
+</script>
+
+</body>
+</html>
