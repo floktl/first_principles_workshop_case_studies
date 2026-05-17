@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case One — Guided Debugging</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background-color: #0a0a0c;
+            color: #e2e8f0;
+            font-family: 'Urbanist', sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at 10% 10%, rgba(94, 234, 212, 0.03) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 90%, rgba(222, 255, 154, 0.03) 0%, transparent 40%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header { text-align: center; margin-bottom: 50px; }
+        header h1 { color: #deff9a; font-size: 2.4rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: -1px; }
+        header p { color: #5eead4; font-family: 'JetBrains Mono', monospace; font-size: 1rem; }
+        .back-to-menu { color: #5eead4; text-decoration: none; border: 1px solid #5eead4; padding: 10px 14px; border-radius: 8px; display: inline-block; background: rgba(94,234,212,0.04); }
+        .back-to-menu:hover { background: rgba(94,234,212,0.12); }
+
+        .view { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .framework-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 24px;
+        }
+        .framework-step {
+            background: #111418;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .framework-step h4 { color: #deff9a; margin: 0 0 6px 0; font-size: 0.85rem; }
+        .framework-step p { color: #94a3b8; font-size: 0.85rem; margin: 0; }
+
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .level-card {
+            background-color: #111418;
+            border: 1px solid #2d3748;
+            border-radius: 12px;
+            padding: 28px 22px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .level-icon { font-size: 2.4rem; margin-bottom: 14px; color: #60a5fa; }
+        .level-card h2 { color: #f8fafc; margin-bottom: 8px; font-size: 1.25rem; }
+        .level-card p { color: #94a3b8; font-size: 0.95rem; }
+
+        .back-btn { background: transparent; border: 1px solid #5eead4; color: #5eead4; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 1rem; margin-bottom: 20px; }
+        .problem-desc { background: rgba(239, 68, 68, 0.08); border-left: 4px solid #ef4444; padding: 18px; border-radius: 0 8px 8px 0; margin-bottom: 20px; }
+        .code-container { background: #1e1e1e; border-radius: 12px; overflow: hidden; border: 1px solid #333; margin-bottom: 20px; }
+        .code-header { background: #2d2d2d; padding: 10px 14px; font-family: 'JetBrains Mono', monospace; color: #94a3b8; font-size: 0.9rem; border-bottom: 1px solid #111; display:flex; justify-content:space-between; }
+        pre { margin: 0; padding: 18px; font-family: 'JetBrains Mono', monospace; overflow-x: auto; font-size: 13px; }
+        .hint-btn { background: #deff9a; color: #000; border: none; font-weight: 700; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem; display: block; width: 100%; transition: all 0.2s; margin-bottom: 14px; }
+        .hint-content { display: none; margin-top: 10px; background: #111418; border: 1px solid #2d3748; border-radius: 12px; padding: 18px; }
+        .rebuild-box { background: rgba(94, 234, 212, 0.05); border: 1px solid #5eead4; padding: 14px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Case One — Guided Debugging</h1>
+        <p>>_ Four guided debugging exercises for hands-on first-principles practice.</p>
+        <p style="margin-top: 0.5rem;"><a href="index.html" class="back-to-menu"><i class="fa-solid fa-arrow-left"></i> Back to Menu</a></p>
+    </header>
+
+    <div id="menu-view" class="view active">
+        <div class="framework-grid">
+            <div class="framework-step"><h4>1. DEFINE</h4><p>Identify the core goal</p></div>
+            <div class="framework-step"><h4>2. HUNT</h4><p>Expose assumptions</p></div>
+            <div class="framework-step"><h4>3. STRIP</h4><p>Find basic truths</p></div>
+            <div class="framework-step"><h4>4. REBUILD</h4><p>Reformulate logic</p></div>
+            <div class="framework-step"><h4>5. ACTION</h4><p>One 24h task</p></div>
+        </div>
+
+        <div class="level-grid">
+            <div class="level-card card-lvl1" onclick="showLevel('lvl1')">
+                <i class="fa-solid fa-scissors level-icon"></i>
+                <h2>Level 1: String parsing</h2>
+                <p>Fix a split function crash on repeated delimiters.</p>
+            </div>
+            <div class="level-card card-lvl2" onclick="showLevel('lvl2')">
+                <i class="fa-solid fa-utensils level-icon"></i>
+                <h2>Level 2: Concurrency</h2>
+                <p>Resolve a deadlock in a resource-sharing routine.</p>
+            </div>
+            <div class="level-card card-lvl3" onclick="showLevel('lvl3')">
+                <i class="fa-solid fa-terminal level-icon"></i>
+                <h2>Level 3: Command parsing</h2>
+                <p>Parse pipes correctly when quotes are involved.</p>
+            </div>
+            <div class="level-card card-lvl1" onclick="showLevel('lvl4')">
+                <i class="fa-solid fa-fire level-icon"></i>
+                <h2>Level 4: Memory fragmentation</h2>
+                <p>Trace a silent memory leak in a recursive tree allocator.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="lvl1" class="view">
+        <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Levels</button>
+        <div class="problem-desc"><strong>The Report:</strong> "My split routine works perfectly on 'hello world', but when I test it with consecutive delimiters like 'hello    world', it SegFaults and crashes instantly."</div>
+        <div class="code-container">
+            <div class="code-header"><span>string_split.c</span><span>C</span></div>
+            <pre><code>int main_split_loop(char *str, char delimiter)
+{
+    int i = 0;
+    int word_index = 0;
+    
+    while (str[i])
+    {
+        // Wait for delimiter, then copy the NEXT word immediately
+        if (str[i] == delimiter)
+        {
+            i++; // Move past delimiter
+            words[word_index] = malloc_and_copy_word(&str[i], delimiter);
+            word_index++;
+        }
+        else
+            i++;
+    }
+}</code></pre>
+        </div>
+        <button class="hint-btn" onclick="revealHint('hint1')">Run First Principles Debugger <i class="fa-solid fa-bug"></i></button>
+        <div id="hint1" class="hint-content">
+            <div class="hint-step"><h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3><p>You assumed that directly after a delimiter, there is ALWAYS a valid word to copy.</p></div>
+            <div class="hint-step"><h3 style="color: #f59e0b;"><i class="fa-solid fa-magnifying-glass"></i> STRIP: How to Find It</h3><p>Ask: what does the code actually know at this moment? Then push it with an edge case. What happens after a delimiter? Is it always a character? Or could it be another delimiter? Could it be the end of string <code>\0</code>?</p></div>
+            <div class="hint-step"><h3 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h3><p>A string is just raw memory. Consecutive delimiters mean the character immediately following a delimiter might just be another delimiter, or the null terminator <code>\0</code>.</p></div>
+            <div class="hint-step"><h3 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Rebuild</h3><div class="rebuild-box">"Because I know <span>[delimiter runs can be longer than one char]</span>, my next step is to <span>[advance past every delimiter until I hit a real character or the end of string]</span> before I attempt to copy."</div></div>
+        </div>
+    </div>
+
+    <div id="lvl2" class="view">
+        <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Levels</button>
+        <div class="problem-desc"><strong>The Report:</strong> "My philosophers simulate fine for a few seconds, but randomly, the entire program freezes completely. Nobody eats, nobody dies, it just hangs forever."</div>
+        <div class="code-container">
+            <div class="code-header"><span>philosophers.c</span><span>C</span></div>
+            <pre><code>void *philosopher_routine(void *arg)
+{
+    t_philo *philo = (t_philo *)arg;
+
+    while (philo->is_alive)
+    {
+        // Everyone grabs their left fork first
+        pthread_mutex_lock(philo->left_fork);
+        
+        // Then everyone grabs their right fork
+        pthread_mutex_lock(philo->right_fork);
+        
+        eat_spaghetti(philo);
+        
+        pthread_mutex_unlock(philo->right_fork);
+        pthread_mutex_unlock(philo->left_fork);
+        
+        sleep_and_think(philo);
+    }
+}</code></pre>
+        </div>
+        <button class="hint-btn" onclick="revealHint('hint2')">Run First Principles Debugger <i class="fa-solid fa-bug"></i></button>
+        <div id="hint2" class="hint-content">
+            <div class="hint-step"><h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3><p>You assumed that because the code is written in order (left then right), the threads will execute cleanly and wait their turn.</p></div>
+            <div class="hint-step"><h3 style="color: #f59e0b;"><i class="fa-solid fa-magnifying-glass"></i> STRIP: How to Find It</h3><p>Ask: what must be true for this routine to work? What if all 5 philosophers acquire their left fork at the same millisecond? Then ask: what are they waiting for? Could they all be waiting for something that no one can release?</p></div>
+            <div class="hint-step"><h3 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h3><p>Thread execution is completely chaotic. If all 5 philosophers spawn at the exact same millisecond, they will ALL lock their left fork simultaneously. Since everyone's right fork is their neighbor's left fork, a mathematically unbreakable <strong>Circular Wait</strong> (Deadlock) occurs.</p></div>
+            <div class="hint-step"><h3 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Rebuild</h3><div class="rebuild-box">"Because I know <span>[a deadlock requires a circular wait]</span>, my next step is to <span>[force an asymmetry into the logic (e.g. Even IDs grab Right then Left, Odd IDs grab Left then Right)]</span>, rather than <span>[hoping the threads time themselves perfectly]</span>."</div></div>
+        </div>
+    </div>
+
+    <div id="lvl3" class="view">
+        <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Levels</button>
+        <div class="problem-desc"><strong>The Report:</strong> "My shell parser uses <code>split_string(input, '|')</code> to break the command into pieces. It works great for <code>ls -l | wc -l</code>, but it completely breaks when the user types <code>echo \"hello | world\"</code> because it splits the string inside the quotes!"</div>
+        <div class="code-container">
+            <div class="code-header"><span>parser.c</span><span>C</span></div>
+            <pre><code>void parse_command_line(char *input)
+{
+    // Assumption: The easiest way to separate piped commands
+    // is to just use a simple split helper.
+    
+    char **commands = split_string(input, '|');
+    
+    int i = 0;
+    while (commands[i])
+    {
+        execute_command(commands[i]);
+        i++;
+    }
+}</code></pre>
+        </div>
+        <button class="hint-btn" onclick="revealHint('hint3')">Run First Principles Debugger <i class="fa-solid fa-bug"></i></button>
+        <div id="hint3" class="hint-content">
+            <div class="hint-step"><h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3><p>You assumed that a pipe character <code>|</code> always means "split the command here," and that string splitting is the best way to handle parsing.</p></div>
+            <div class="hint-step"><h3 style="color: #f59e0b;"><i class="fa-solid fa-magnifying-glass"></i> STRIP: How to Find It</h3><p>Ask: what do the quotes mean? Are they just characters to be printed, or do they mean something special to the parser? When you see a <code>|</code> inside quotes, should it still split the command?</p></div>
+            <div class="hint-step"><h3 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h3><p>Quotes do not exist to be printed; they act as a boolean toggle (<code>in_quotes = true/false</code>). A pipe <code>|</code> only functions as a pipe when <code>in_quotes == false</code>. <code>split_string</code> is dumb and does not know what quotes are.</p></div>
+            <div class="hint-step"><h3 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Rebuild</h3><div class="rebuild-box">"Because I know <span>[quotes just toggle a boolean state]</span>, my next step is to <span>[write a custom tokenizer that iterates character by character and ignores special characters when in_quotes is true]</span>, rather than <span>[relying on a blind ft_split]</span>."</div></div>
+        </div>
+    </div>
+
+    <div id="lvl4" class="view">
+        <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Levels</button>
+        <div class="problem-desc"><strong>The Report:</strong> "The allocator works perfectly on test cases, but on a large dataset with deep recursion, memory consumption grows constantly even though the tree has been deleted."</div>
+        <div class="code-container">
+            <div class="code-header"><span>tree_allocator.c</span><span>C</span></div>
+            <pre><code>t_node *build_tree(int *data, int left, int right)
+{
+    t_node *node = malloc(sizeof(t_node));
+    
+    if (left > right)
+        return (NULL);
+    
+    node->value = data[left];
+    
+    if (left < right)
+    {
+        int mid = (left + right) / 2;
+        node->left = build_tree(data, left, mid - 1);
+        node->right = build_tree(data, mid + 1, right);
+    }
+    
+    return (node);
+}
+
+void delete_tree(t_node *node)
+{
+    if (!node)
+        return ;
+    
+    delete_tree(node->left);
+    delete_tree(node->right);
+    free(node);
+}
+</code></pre>
+        </div>
+        <button class="hint-btn" onclick="revealHint('hint4')">Run First Principles Debugger <i class="fa-solid fa-bug"></i></button>
+        <div id="hint4" class="hint-content">
+            <div class="hint-step"><h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3><p>You assumed that the memory leak is in the delete logic, since the allocator seems to work correctly on small tests.</p></div>
+            <div class="hint-step"><h3 style="color: #f59e0b;"><i class="fa-solid fa-magnifying-glass"></i> STRIP: How to Find It</h3><p>Ask: at what point in the function does allocation happen? Does the function always allocate? What happens if you allocate memory and then return NULL? Who owns that memory if the pointer is never returned?</p></div>
+            <div class="hint-step"><h3 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h3><p>The leak is in <code>build_tree</code>. When <code>left > right</code>, the function returns <span class="string">NULL</span>—but it already called <code>malloc</code> before checking. The node on the stack is orphaned and never freed. Recursive calls to deep trees mean thousands of orphaned allocations.</p></div>
+            <div class="hint-step"><h3 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Rebuild</h3><div class="rebuild-box">"Because I know <span>[malloc happens before the bounds check]</span>, my next step is to <span>[check the bounds FIRST, before allocating]</span>, rather than allocating and then discarding the pointer."</div></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function showLevel(levelId) {
+        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+        document.getElementById(levelId).classList.add('active');
+        document.querySelectorAll('.hint-content').forEach(el => el.style.display = 'none');
+    }
+
+    function goBack() {
+        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+        document.getElementById('menu-view').classList.add('active');
+    }
+
+    function revealHint(hintId) {
+        const hintEl = document.getElementById(hintId);
+        hintEl.style.display = 'block';
+        hintEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+</script>
+
+</body>
+</html>

@@ -37,6 +37,8 @@
         header { text-align: center; margin-bottom: 50px; }
         header h1 { color: #deff9a; font-size: 3rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: -1px; }
         header p { color: #5eead4; font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; }
+        .back-to-menu { color: #5eead4; text-decoration: none; border: 1px solid #5eead4; padding: 10px 14px; border-radius: 8px; display: inline-block; background: rgba(94,234,212,0.04); }
+        .back-to-menu:hover { background: rgba(94,234,212,0.12); }
 
         .view { display: none; animation: fadeIn 0.4s ease-in-out; }
         .view.active { display: block; }
@@ -130,7 +132,7 @@
     <header>
         <h1>Debugger Workshop</h1>
         <p>>_ Three additional no-guidance challenges for the workshop.</p>
-        <p style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.95rem;"><a href="index.html" style="color: #5eead4; text-decoration: none;">Return to the guided challenge set ←</a> · <a href="index3.html" style="color: #5eead4; text-decoration: none;">Jump to personal life challenges →</a> · <a href="index4.html" style="color: #f59e0b; text-decoration: none;">See Raptor engine case study →</a></p>
+        <p style="margin-top: 0.5rem;"><a href="index.html" class="back-to-menu"><i class="fa-solid fa-arrow-left"></i> Back to Menu</a></p>
     </header>
 
     <div id="menu-view" class="view active">
