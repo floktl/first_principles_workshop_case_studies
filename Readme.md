@@ -3,7 +3,9 @@
 This repository contains the presentation and facilitator materials for a 120-minute guided peer-to-peer workshop designed for students at 42.
 
 ## How to View the Presentation
+Open: https://htmlpreview.github.io/?https://raw.githubusercontent.com/floktl/first_principles_workshop_case_studies/main/index.html the Host will explain every step
 Simply open the `index.html` file in any modern web browser. If you host this repository via **GitHub Pages**, the presentation will automatically serve as your website.
+
 
 ---
 
