@@ -57,13 +57,122 @@
             padding: 14px;
             text-align: center;
             font-family: 'JetBrains Mono', monospace;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .framework-step:hover,
+        .framework-step:focus {
+            border-color: #deff9a;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+            outline: none;
         }
         .framework-step h4 { color: #deff9a; margin: 0 0 6px 0; font-size: 0.85rem; }
         .framework-step p { color: #94a3b8; font-size: 0.85rem; margin: 0; }
+        .framework-step small { display: block; margin-top: 10px; color: #5eead4; font-size: 0.75rem; }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.72);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.25s ease-in-out;
+        }
+
+        .modal-box {
+            width: min(720px, 100%);
+            background: #111418;
+            border: 1px solid #2d3748;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.65);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 22px 26px;
+            border-bottom: 1px solid #2d3748;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #deff9a;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.35rem;
+        }
+
+        .modal-header p {
+            margin: 8px 0 0 0;
+            color: #5eead4;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: 1px solid #5eead4;
+            color: #5eead4;
+            border-radius: 8px;
+            width: 38px;
+            height: 38px;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: rgba(94, 234, 212, 0.12);
+        }
+
+        .modal-body {
+            padding: 26px;
+        }
+
+        .modal-body h3 {
+            color: #f8fafc;
+            margin: 0 0 10px 0;
+            font-size: 1.05rem;
+        }
+
+        .modal-body p {
+            color: #cbd5e1;
+            margin: 0 0 18px 0;
+        }
+
+        .modal-body ul {
+            margin: 0 0 22px 20px;
+            padding: 0;
+            color: #cbd5e1;
+        }
+
+        .modal-body li {
+            margin-bottom: 10px;
+        }
+
+        .prompt-box {
+            background: rgba(94, 234, 212, 0.06);
+            border: 1px solid rgba(94, 234, 212, 0.55);
+            border-radius: 10px;
+            padding: 18px;
+            font-family: 'JetBrains Mono', monospace;
+            color: #deff9a;
+        }
 
         .level-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 30px;
         }
 
@@ -103,11 +212,11 @@
 
     <div id="menu-view" class="view active">
         <div class="framework-grid">
-            <div class="framework-step"><h4>1. DEFINE</h4><p>Identify the core goal</p></div>
-            <div class="framework-step"><h4>2. HUNT</h4><p>Expose assumptions</p></div>
-            <div class="framework-step"><h4>3. STRIP</h4><p>Find basic truths</p></div>
-            <div class="framework-step"><h4>4. REBUILD</h4><p>Reformulate logic</p></div>
-            <div class="framework-step"><h4>5. ACTION</h4><p>One 24h task</p></div>
+            <div class="framework-step" tabindex="0" role="button" onclick="openModal(1)" onkeydown="handleStepKey(event, 1)"><h4>1. DEFINE</h4><p>Identify the core goal</p><small>Click for details</small></div>
+            <div class="framework-step" tabindex="0" role="button" onclick="openModal(2)" onkeydown="handleStepKey(event, 2)"><h4>2. HUNT</h4><p>Expose assumptions</p><small>Click for details</small></div>
+            <div class="framework-step" tabindex="0" role="button" onclick="openModal(3)" onkeydown="handleStepKey(event, 3)"><h4>3. STRIP</h4><p>Find basic truths</p><small>Click for details</small></div>
+            <div class="framework-step" tabindex="0" role="button" onclick="openModal(4)" onkeydown="handleStepKey(event, 4)"><h4>4. REBUILD</h4><p>Reformulate logic</p><small>Click for details</small></div>
+            <div class="framework-step" tabindex="0" role="button" onclick="openModal(5)" onkeydown="handleStepKey(event, 5)"><h4>5. ACTION</h4><p>One 24h task</p><small>Click for details</small></div>
         </div>
 
         <div class="level-grid">
@@ -130,6 +239,26 @@
                 <i class="fa-solid fa-fire level-icon"></i>
                 <h2>Level 4: Memory fragmentation</h2>
                 <p>Trace a silent memory leak in a recursive tree allocator.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="step-modal" class="modal-overlay" onclick="closeModalOnOverlay(event)">
+        <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <div class="modal-header">
+                <div>
+                    <h2 id="modal-title"></h2>
+                    <p id="modal-subtitle"></p>
+                </div>
+                <button class="close-btn" onclick="closeModal()" aria-label="Close popup">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h3>What this means</h3>
+                <p id="modal-description"></p>
+                <h3>Use it in debugging</h3>
+                <ul id="modal-list"></ul>
+                <h3>Workshop prompt</h3>
+                <div id="modal-prompt" class="prompt-box"></div>
             </div>
         </div>
     </div>
@@ -294,6 +423,103 @@ void delete_tree(t_node *node)
         hintEl.style.display = 'block';
         hintEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
+
+    const stepContent = {
+        1: {
+            title: "1. DEFINE",
+            subtitle: "Identify the bug or behavior you actually need to fix.",
+            description: "Before changing code, make the error explicit. A precise bug definition keeps you from chasing symptoms or overfitting a single test case.",
+            bullets: [
+                "Describe what the program does now and what it should do instead.",
+                "Capture the exact conditions that reproduce the failure.",
+                "Separate the real defect from the current implementation details."
+            ],
+            prompt: "Write: “The bug happens when ______, and the expected output is ______.”"
+        },
+        2: {
+            title: "2. HUNT",
+            subtitle: "Expose the assumptions behind the code path.",
+            description: "Many bugs come from assumptions about input, state, or sequencing. This step is about exposing what the code is silently trusting.",
+            bullets: [
+                "List what the code assumes about inputs, pointers, loop bounds, and states.",
+                "Check whether variables can be null, empty, out of range, or stale.",
+                "Ask whether the code depends on a hidden order or side effect that may not always hold."
+            ],
+            prompt: "Write: “I assume ______ is always true; verify whether it can be false.”"
+        },
+        3: {
+            title: "3. STRIP",
+            subtitle: "Reduce the bug to basic, verified facts.",
+            description: "Strip away guesses, comments, and conventions. Keep only what the code and runtime behavior actually prove. Those are the facts you can build on.",
+            bullets: [
+                "Keep only observable facts from the failing test and the code path.",
+                "Remove any statement that begins with 'should', 'probably', or 'I think'.",
+                "Confirm what each function call and branch actually does."
+            ],
+            prompt: "Write: “What I know for sure is ______.”"
+        },
+        4: {
+            title: "4. REBUILD",
+            subtitle: "Create a fix from the basic truths.",
+            description: "Once the facts are clear, redesign the code flow based on them. Prefer explicit checks, simpler state transitions, and fewer assumptions.",
+            bullets: [
+                "Ask how the code should behave given the confirmed truths.",
+                "Choose the simplest code path that handles the real edge cases.",
+                "Avoid patching symptoms with more complexity."
+            ],
+            prompt: "Write: “The corrected logic should ______ instead of ______.”"
+        },
+        5: {
+            title: "5. ACTION",
+            subtitle: "Choose one small code change or test.",
+            description: "Make a concrete next step you can complete in one coding session. Use it to validate your understanding and move the bug fix forward.",
+            bullets: [
+                "Pick one specific code edit, assertion, or test to write.",
+                "Keep it small enough that you can finish it quickly.",
+                "Use it to confirm or reject your current hypothesis."
+            ],
+            prompt: "Write: “In the next 24 hours, I will ______.”"
+        }
+    };
+
+    function openModal(stepNumber) {
+        const data = stepContent[stepNumber];
+        document.getElementById("modal-title").textContent = data.title;
+        document.getElementById("modal-subtitle").textContent = data.subtitle;
+        document.getElementById("modal-description").textContent = data.description;
+        document.getElementById("modal-prompt").textContent = data.prompt;
+        const list = document.getElementById("modal-list");
+        list.innerHTML = "";
+        data.bullets.forEach(item => {
+            const li = document.createElement("li");
+            li.textContent = item;
+            list.appendChild(li);
+        });
+        document.getElementById("step-modal").classList.add("active");
+    }
+
+    function closeModal() {
+        document.getElementById("step-modal").classList.remove("active");
+    }
+
+    function closeModalOnOverlay(event) {
+        if (event.target.id === "step-modal") {
+            closeModal();
+        }
+    }
+
+    function handleStepKey(event, stepNumber) {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openModal(stepNumber);
+        }
+    }
+
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Escape") {
+            closeModal();
+        }
+    });
 </script>
 
 </body>

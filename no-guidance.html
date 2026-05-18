@@ -46,7 +46,7 @@
 
         .level-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 30px;
         }
 
@@ -521,56 +521,56 @@
     const stepContent = {
         1: {
             title: "1. DEFINE",
-            subtitle: "Clarify what you are really trying to achieve.",
-            description: "Before solving anything, make the goal explicit. A clear goal prevents you from optimizing the wrong thing or getting stuck in surface-level details.",
+            subtitle: "Identify the bug or behavior you actually need to fix.",
+            description: "Before changing code, make the error explicit. A precise bug definition keeps you from chasing symptoms or overfitting a single test case.",
             bullets: [
-                "Describe the desired outcome in one simple sentence.",
-                "Separate the real goal from the current method you are using.",
-                "Ask: what would success look like if this were solved well?"
+                "Describe what the program does now and what it should do instead.",
+                "Capture the exact conditions that reproduce the failure.",
+                "Separate the real defect from the current implementation details."
             ],
-            prompt: "Write: “The real goal is to ______.”"
+            prompt: "Write: “The bug happens when ______, and the expected output is ______.”"
         },
         2: {
             title: "2. HUNT",
-            subtitle: "Find the assumptions you are treating as facts.",
-            description: "Many problems feel stuck because hidden assumptions limit the possible solutions. This step is about noticing what you believe must be true.",
+            subtitle: "Expose the assumptions behind the code path.",
+            description: "Many bugs come from assumptions about input, state, or sequencing. This step is about exposing what the code is silently trusting.",
             bullets: [
-                "List what you are assuming about the situation, people, resources, timing, or constraints.",
-                "Ask which assumptions came from habit, fear, convention, or past experience.",
-                "Challenge each assumption with: is this definitely true?"
+                "List what the code assumes about inputs, pointers, loop bounds, and states.",
+                "Check whether variables can be null, empty, out of range, or stale.",
+                "Ask whether the code depends on a hidden order or side effect that may not always hold."
             ],
-            prompt: "Write 3 assumptions, then ask: “What if this is not true?”"
+            prompt: "Write: “I assume ______ is always true; verify whether it can be false.”"
         },
         3: {
             title: "3. STRIP",
-            subtitle: "Reduce the situation to basic truths.",
-            description: "Strip away opinions, habits, and inherited explanations until only the things you know for sure remain. These basic truths are the foundation for better thinking.",
+            subtitle: "Reduce the bug to basic, verified facts.",
+            description: "Strip away guesses, comments, and conventions. Keep only what the code and runtime behavior actually prove. Those are the facts you can build on.",
             bullets: [
-                "Keep only facts you can observe, verify, or directly experience.",
-                "Remove statements that begin with “I guess,” “people always,” or “it has to be.”",
-                "Look for what remains true even if your current plan changes."
+                "Keep only observable facts from the failing test and the code path.",
+                "Remove any statement that begins with 'should', 'probably', or 'I think'.",
+                "Confirm what each function call and branch actually does."
             ],
             prompt: "Write: “What I know for sure is ______.”"
         },
         4: {
             title: "4. REBUILD",
-            subtitle: "Create a better path from the basic truths.",
-            description: "Once you have the basic truths, rebuild your approach from scratch. The goal is not to improve the old plan slightly, but to create a clearer path based on what is actually true.",
+            subtitle: "Create a fix from the basic truths.",
+            description: "Once the facts are clear, redesign the code flow based on them. Prefer explicit checks, simpler state transitions, and fewer assumptions.",
             bullets: [
-                "Ask what solution naturally follows from the facts.",
-                "Look for simpler options you ignored before.",
-                "Design the next approach without copying the old one automatically."
+                "Ask how the code should behave given the confirmed truths.",
+                "Choose the simplest code path that handles the real edge cases.",
+                "Avoid patching symptoms with more complexity."
             ],
-            prompt: "Write: “Given these truths, a better approach could be ______.”"
+            prompt: "Write: “The corrected logic should ______ instead of ______.”"
         },
         5: {
             title: "5. ACTION",
-            subtitle: "Choose one concrete next step.",
-            description: "Thinking becomes useful when it leads to action. End with one small, specific task that creates movement or tests your new understanding.",
+            subtitle: "Choose one small code change or test.",
+            description: "Make a concrete next step you can complete in one coding session. Use it to validate your understanding and move the bug fix forward.",
             bullets: [
-                "Choose one action you can complete within 24 hours.",
-                "Make it specific enough that you can clearly say whether it is done.",
-                "Use the action to test, learn, decide, or move forward."
+                "Pick one specific code edit, assertion, or test to write.",
+                "Keep it small enough that you can finish it quickly.",
+                "Use it to confirm or reject your current hypothesis."
             ],
             prompt: "Write: “In the next 24 hours, I will ______.”"
         }
@@ -602,6 +602,12 @@
         if (event.target.id === "step-modal") {
             closeModal();
         }
+    }
+
+    function showLevel(levelId) {
+        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+        document.getElementById(levelId).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function handleStepKey(event, stepNumber) {

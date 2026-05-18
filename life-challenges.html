@@ -95,7 +95,7 @@
 
         .level-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 30px;
         }
 
@@ -115,6 +115,13 @@
             transform: translateY(-5px);
             border-color: #deff9a;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .realworld-row {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: 1fr;
+            justify-items: center;
         }
 
         .level-card::before {
@@ -514,7 +521,9 @@
                 <h2>Level 4: Core value conflict</h2>
                 <p>Navigate a choice between two deeply important but incompatible goals.</p>
             </div>
+        </div>
 
+        <div class="realworld-row">
             <div class="level-card card-lvl2" onclick="showLevel('lvl11')">
                 <i class="fa-solid fa-chalkboard-user level-icon"></i>
                 <h2>Real world example: Teaching without a degree</h2>
@@ -852,56 +861,56 @@
     const stepContent = {
         1: {
             title: "1. DEFINE",
-            subtitle: "Clarify what you are really trying to achieve.",
-            description: "Before solving anything, make the goal explicit. A clear goal prevents you from optimizing the wrong thing or getting stuck in surface-level details.",
+            subtitle: "Identify the people, feelings, or values at stake.",
+            description: "Before reacting, name the real issue. This step helps you separate emotional pressure from what you actually want to happen.",
             bullets: [
-                "Describe the desired outcome in one simple sentence.",
-                "Separate the real goal from the current method you are using.",
-                "Ask: what would success look like if this were solved well?"
+                "Describe the outcome you want for yourself and the people involved.",
+                "Name the emotions, needs, or values that matter most in this moment.",
+                "Separate the real challenge from the story you are telling yourself."
             ],
-            prompt: "Write: “The real goal is to ______.”"
+            prompt: "Write: “The real challenge is ______, and it matters because ______.”"
         },
         2: {
             title: "2. HUNT",
-            subtitle: "Find the assumptions you are treating as facts.",
-            description: "Many problems feel stuck because hidden assumptions limit the possible solutions. This step is about noticing what you believe must be true.",
+            subtitle: "Expose the assumptions behind your choices.",
+            description: "Many life problems feel stuck because beliefs about others or the situation are taken as facts. This step helps you question what you are assuming.",
             bullets: [
-                "List what you are assuming about the situation, people, resources, timing, or constraints.",
-                "Ask which assumptions came from habit, fear, convention, or past experience.",
-                "Challenge each assumption with: is this definitely true?"
+                "List what you assume people expect, how they will react, or what you must do.",
+                "Check whether a belief is your own or borrowed from someone else.",
+                "Ask whether the worst-case story is actually true."
             ],
-            prompt: "Write 3 assumptions, then ask: “What if this is not true?”"
+            prompt: "Write: “I assume ______ about this person or situation; check whether it is true.”"
         },
         3: {
             title: "3. STRIP",
-            subtitle: "Reduce the situation to basic truths.",
-            description: "Strip away opinions, habits, and inherited explanations until only the things you know for sure remain. These basic truths are the foundation for better thinking.",
+            subtitle: "Reduce the situation to what is real and what you feel.",
+            description: "Strip away judgment, blame, and 'should' thinking. Keep only the facts you can observe and the feelings you can name.",
             bullets: [
-                "Keep only facts you can observe, verify, or directly experience.",
-                "Remove statements that begin with “I guess,” “people always,” or “it has to be.”",
-                "Look for what remains true even if your current plan changes."
+                "Keep only what actually happened and how you responded.",
+                "Remove what-if fears, expectations, and unproven stories.",
+                "Notice what remains true even if plans change."
             ],
             prompt: "Write: “What I know for sure is ______.”"
         },
         4: {
             title: "4. REBUILD",
-            subtitle: "Create a better path from the basic truths.",
-            description: "Once you have the basic truths, rebuild your approach from scratch. The goal is not to improve the old plan slightly, but to create a clearer path based on what is actually true.",
+            subtitle: "Create a better path from what is real.",
+            description: "Use the truths you uncovered to build a more caring and sustainable response. This step is about choosing a move that respects both people and your own boundaries.",
             bullets: [
-                "Ask what solution naturally follows from the facts.",
-                "Look for simpler options you ignored before.",
-                "Design the next approach without copying the old one automatically."
+                "Ask what the kindest realistic option is for everyone involved.",
+                "Look for a step that is both honest and manageable.",
+                "Avoid solutions that depend on someone else changing first."
             ],
-            prompt: "Write: “Given these truths, a better approach could be ______.”"
+            prompt: "Write: “A healthier next step could be ______.”"
         },
         5: {
             title: "5. ACTION",
-            subtitle: "Choose one concrete next step.",
-            description: "Thinking becomes useful when it leads to action. End with one small, specific task that creates movement or tests your new understanding.",
+            subtitle: "Choose one concrete personal step.",
+            description: "Make a small, specific move you can take soon. Use it to learn how the situation shifts and what matters most.",
             bullets: [
-                "Choose one action you can complete within 24 hours.",
-                "Make it specific enough that you can clearly say whether it is done.",
-                "Use the action to test, learn, decide, or move forward."
+                "Pick one action you can actually do in the next 24 hours.",
+                "Make it clear enough that you can tell whether you followed through.",
+                "Use the action to learn, adjust, or move the relationship forward."
             ],
             prompt: "Write: “In the next 24 hours, I will ______.”"
         }
