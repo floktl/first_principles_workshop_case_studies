@@ -94,16 +94,20 @@
         }
 
         .level-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 30px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: nowrap;
+            overflow-x: visible;
+            justify-content: center;
+            padding-bottom: 8px;
         }
 
         .level-card {
             background-color: #111418;
             border: 1px solid #2d3748;
             border-radius: 12px;
-            padding: 40px 30px;
+            padding: 22px 18px;
+            flex: 0 0 220px;
             cursor: pointer;
             transition: all 0.2s;
             text-align: center;
@@ -138,20 +142,20 @@
         .card-lvl3::before { background: #f87171; }
 
         .level-icon {
-            font-size: 3rem;
-            margin-bottom: 20px;
+            font-size: 2.2rem;
+            margin-bottom: 12px;
             color: #5eead4;
         }
 
         .level-card h2 {
             color: #f8fafc;
-            margin-bottom: 10px;
-            font-size: 1.8rem;
+            margin-bottom: 8px;
+            font-size: 1.25rem;
         }
 
         .level-card p {
             color: #94a3b8;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
         .framework-grid {

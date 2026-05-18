@@ -265,13 +265,17 @@
 
     <div id="lvl1" class="view">
         <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Levels</button>
-        <div class="problem-desc"><strong>The Report:</strong> "My split routine works perfectly on 'hello world', but when I test it with consecutive delimiters like 'hello    world', it SegFaults and crashes instantly."</div>
+        <div class="problem-desc"><strong>The Report:</strong> "My split routine works perfectly on 'hello,world', but when I test it with consecutive delimiters like 'hello,,world', it SegFaults and crashes instantly."</div>
         <div class="code-container">
             <div class="code-header"><span>string_split.c</span><span>C</span></div>
             <pre><code>int main_split_loop(char *str, char delimiter)
 {
     int i = 0;
     int word_index = 0;
+
+    // Copy the first word before the first delimiter
+    if (str[0] != delimiter)
+        words[word_index++] = malloc_and_copy_word(&str[0], delimiter);
     
     while (str[i])
     {
@@ -287,7 +291,7 @@
     }
 }</code></pre>
         </div>
-        <button class="hint-btn" onclick="revealHint('hint1')">Run First Principles Debugger <i class="fa-solid fa-bug"></i></button>
+        <button class="hint-btn" onclick="revealHint('hint1')">First Principles Reasoning <i class="fa-solid fa-bug"></i></button>
         <div id="hint1" class="hint-content">
             <div class="hint-step"><h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3><p>You assumed that directly after a delimiter, there is ALWAYS a valid word to copy.</p></div>
             <div class="hint-step"><h3 style="color: #f59e0b;"><i class="fa-solid fa-magnifying-glass"></i> STRIP: How to Find It</h3><p>Ask: what does the code actually know at this moment? Then push it with an edge case. What happens after a delimiter? Is it always a character? Or could it be another delimiter? Could it be the end of string <code>\0</code>?</p></div>
@@ -322,7 +326,7 @@
     }
 }</code></pre>
         </div>
-        <button class="hint-btn" onclick="revealHint('hint2')">Run First Principles Debugger <i class="fa-solid fa-bug"></i></button>
+        <button class="hint-btn" onclick="revealHint('hint2')">First Principles Reasoning <i class="fa-solid fa-bug"></i></button>
         <div id="hint2" class="hint-content">
             <div class="hint-step"><h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3><p>You assumed that because the code is written in order (left then right), the threads will execute cleanly and wait their turn.</p></div>
             <div class="hint-step"><h3 style="color: #f59e0b;"><i class="fa-solid fa-magnifying-glass"></i> STRIP: How to Find It</h3><p>Ask: what must be true for this routine to work? What if all 5 philosophers acquire their left fork at the same millisecond? Then ask: what are they waiting for? Could they all be waiting for something that no one can release?</p></div>
@@ -351,7 +355,7 @@
     }
 }</code></pre>
         </div>
-        <button class="hint-btn" onclick="revealHint('hint3')">Run First Principles Debugger <i class="fa-solid fa-bug"></i></button>
+        <button class="hint-btn" onclick="revealHint('hint3')">First Principles Reasoning <i class="fa-solid fa-bug"></i></button>
         <div id="hint3" class="hint-content">
             <div class="hint-step"><h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3><p>You assumed that a pipe character <code>|</code> always means "split the command here," and that string splitting is the best way to handle parsing.</p></div>
             <div class="hint-step"><h3 style="color: #f59e0b;"><i class="fa-solid fa-magnifying-glass"></i> STRIP: How to Find It</h3><p>Ask: what do the quotes mean? Are they just characters to be printed, or do they mean something special to the parser? When you see a <code>|</code> inside quotes, should it still split the command?</p></div>
@@ -395,7 +399,7 @@ void delete_tree(t_node *node)
 }
 </code></pre>
         </div>
-        <button class="hint-btn" onclick="revealHint('hint4')">Run First Principles Debugger <i class="fa-solid fa-bug"></i></button>
+        <button class="hint-btn" onclick="revealHint('hint4')">First Principles Reasoning <i class="fa-solid fa-bug"></i></button>
         <div id="hint4" class="hint-content">
             <div class="hint-step"><h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3><p>You assumed that the memory leak is in the delete logic, since the allocator seems to work correctly on small tests.</p></div>
             <div class="hint-step"><h3 style="color: #f59e0b;"><i class="fa-solid fa-magnifying-glass"></i> STRIP: How to Find It</h3><p>Ask: at what point in the function does allocation happen? Does the function always allocate? What happens if you allocate memory and then return NULL? Who owns that memory if the pointer is never returned?</p></div>
