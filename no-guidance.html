@@ -335,7 +335,7 @@
     <div id="lvl4" class="view">
         <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Levels</button>
         <div class="problem-desc">
-            <strong>The Report:</strong> "The routine sometimes corrupts adjacent memory when processing long input strings."
+            <strong>The Report:</strong> "A long request can corrupt adjacent memory when the service copies payload into a fixed local buffer."
         </div>
         <div class="code-container">
             <div class="code-header"><span>buffer_copy.c</span><span>C</span></div>
@@ -350,25 +350,32 @@
     }
     dest[i] = <span class="string">'\0'</span>;
 }
+
+<span class="type">void</span> <span class="func">handle_request</span>(<span class="type">const</span> <span class="type">char</span> *payload)
+{
+    <span class="type">char</span> buffer[<span class="string">128</span>];
+    <span class="func">copy_input</span>(buffer, payload, <span class="keyword">sizeof</span>(buffer));
+    <span class="func">process_buffer</span>(buffer);
+}
 </code></pre>
         </div>
         <button class="hint-btn" onclick="revealHint('hint4')">Show hint</button>
         <div id="hint4" class="hint-content">
             <div class="hint-step">
                 <h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3>
-                <p>The code assumes the destination buffer is always large enough for the source string.</p>
+                <p>The caller trusts the helper to enforce the buffer limit, but the helper ignores the only guard it receives.</p>
             </div>
             <div class="hint-step">
                 <h3 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h3>
-                <p>C does not check lengths for you. If the copy loop ignores the provided <code>max</code> value, it can write past the end of <code>dest</code> even though the source looks valid.</p>
+                <p><code>max</code> is passed into <code>copy_input</code>, yet the function does not use it. That means a source longer than the destination can overflow the buffer.</p>
             </div>
             <div class="hint-step">
                 <h3 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Fix Idea</h3>
-                <div class="rebuild-box">"Because I know <span>[the size limit is the only guard here]</span>, my next step is to <span>[use <code>max</code> when iterating and stop before the buffer ends]</span> instead of assuming the source length is safe."</div>
+                <div class="rebuild-box">"Because I know <span>[this helper owns the write into the buffer]</span>, my next step is to <span>[stop copying when I reach <code>max - 1</code> and still null-terminate <code>dest</code>]</span> instead of copying the whole input blindly."</div>
             </div>
             <div class="hint-step">
                 <h3 class="h-truth"><i class="fa-solid fa-lightbulb"></i> Finding Basic Truths</h3>
-                <p>Start by asking what the function can rely on. If a parameter is named <code>max</code>, verify whether it is actually used by the loop. If not, challenge that assumption first.</p>
+                <p>Identify where the buffer originates and which function must protect it. The bug is not the string contents—it is the ignored size check.</p>
             </div>
         </div>
     </div>
@@ -376,7 +383,7 @@
     <div id="lvl5" class="view">
         <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Levels</button>
         <div class="problem-desc">
-            <strong>The Report:</strong> "A client message sometimes causes the parser to reject the next valid request."
+            <strong>The Report:</strong> "A valid client message can leave the connection in the wrong state, causing the next request to be rejected."
         </div>
         <div class="code-container">
             <div class="code-header"><span>protocol.c</span><span>C</span></div>
@@ -391,25 +398,38 @@
 
     state++;
 }
+
+<span class="type">void</span> <span class="func">connection_loop</span>(<span class="type">void</span>)
+{
+    <span class="type">int</span> connection_state = <span class="string">0</span>;
+
+    <span class="keyword">while</span> (has_message())
+    {
+        <span class="type">char</span> *msg = next_message();
+        <span class="func">process_message</span>(connection_state, msg);
+        <span class="keyword">if</span> (connection_state == <span class="string">1</span>)
+            log_state(<span class="string">"ready for data"</span>);
+    }
+}
 </code></pre>
         </div>
         <button class="hint-btn" onclick="revealHint('hint5')">Show hint</button>
         <div id="hint5" class="hint-content">
             <div class="hint-step">
                 <h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3>
-                <p>The parser assumes the local <code>state</code> variable change will persist outside the function.</p>
+                <p>The code assumes that incrementing the local <code>state</code> inside <code>process_message</code> will update the caller's connection state.</p>
             </div>
             <div class="hint-step">
                 <h3 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h3>
-                <p>In C, passing an integer by value creates a separate copy. Incrementing that copy does not alter the caller's state.</p>
+                <p>In C, passing an integer by value gives the function a copy. Changes to that copy do not modify the original <code>connection_state</code> in the loop.</p>
             </div>
             <div class="hint-step">
                 <h3 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Fix Idea</h3>
-                <div class="rebuild-box">"Because I know <span>[state is copied into the function]</span>, my next step is to <span>[return the new state or update a state reference] rather than incrementing a local copy only.</span>"</div>
+                <div class="rebuild-box">"Because I know <span>[the caller still owns the real connection state]</span>, my next step is to <span>[return the updated state or pass a pointer/reference] so the new state persists between messages.</span>"</div>
             </div>
             <div class="hint-step">
                 <h3 class="h-truth"><i class="fa-solid fa-lightbulb"></i> Finding Basic Truths</h3>
-                <p>Look for where values enter and exit the function. If a value is used but never returned or stored through a pointer, it may not survive the function call.</p>
+                <p>Check where the state is declared and where it is used after the call. If the function does not return it or write it back, the update is only local.</p>
             </div>
         </div>
     </div>
@@ -421,11 +441,19 @@
         </div>
         <div class="code-container">
             <div class="code-header"><span>counter.c</span><span>C</span></div>
-            <pre><code><span class="type">void</span> <span class="func">increment</span>(<span class="type">int</span> *counter)
+            <pre><code><span class="keyword">extern</span> <span class="type">int</span> shared_counter;
+
+<span class="type">void</span> <span class="func">increment</span>(<span class="type">int</span> *counter)
 {
     <span class="type">int</span> value = *counter;
     value++;
     *counter = value;
+}
+
+<span class="type">void</span> <span class="func">worker</span>(<span class="type">void</span>)
+{
+    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="string">0</span>; i < <span class="string">10000</span>; i++)
+        <span class="func">increment</span>(&shared_counter);
 }
 </code></pre>
         </div>
@@ -433,19 +461,19 @@
         <div id="hint6" class="hint-content">
             <div class="hint-step">
                 <h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3>
-                <p>The code assumes the two read/write operations on <code>*counter</code> happen together as one atomic step.</p>
+                <p>The code assumes the read-modify-write on a shared counter is atomic across multiple worker threads.</p>
             </div>
             <div class="hint-step">
                 <h3 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h3>
-                <p>Read, increment, and write are separate operations. Another thread can change <code>*counter</code> between the load and the store.</p>
+                <p><code>increment</code> performs three separate operations. Another thread can change the value between the read and the write, causing lost updates.</p>
             </div>
             <div class="hint-step">
                 <h3 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Fix Idea</h3>
-                <div class="rebuild-box">"Because I know <span>[the counter is shared and not protected]</span>, my next step is to <span>[guard the update with a lock or use an atomic increment] so the read-modify-write sequence cannot interleave.</span>"</div>
+                <div class="rebuild-box">"Because I know <span>[the counter is shared between workers]</span>, my next step is to <span>[guard updates with a mutex or use an atomic increment function] so the sequence cannot interleave.</span>"</div>
             </div>
             <div class="hint-step">
                 <h3 class="h-truth"><i class="fa-solid fa-lightbulb"></i> Finding Basic Truths</h3>
-                <p>Ask whether two lines rely on the same memory location. If they do, consider what else could happen between them and whether that changes the result.</p>
+                <p>Locate the shared resource and ask whether every access is protected. If not, the bug originates from uncoordinated access to the shared counter.</p>
             </div>
         </div>
     </div>
@@ -460,11 +488,17 @@
             <pre><code><span class="type">int</span> <span class="func">check_access</span>(<span class="type">int</span> user_perms, <span class="type">int</span> required)
 {
     <span class="type">int</span> mask = (<span class="string">1</span> << required);
-    
+
     <span class="keyword">if</span> ((user_perms & mask) != <span class="string">0</span>)
         <span class="keyword">return</span> (<span class="string">1</span>); <span class="comment">// Access granted</span>
     <span class="keyword">else</span>
         <span class="keyword">return</span> (<span class="string">0</span>); <span class="comment">// Access denied</span>
+}
+
+<span class="type">int</span> <span class="func">authorize_user</span>(<span class="type">int</span> user_perms)
+{
+    <span class="type">int</span> required = PERMS; <span class="comment">// e.g. 0b1010</span>
+    <span class="keyword">return</span> <span class="func">check_access</span>(user_perms, required);
 }
 </code></pre>
         </div>
@@ -472,15 +506,19 @@
         <div id="hint7" class="hint-content">
             <div class="hint-step">
                 <h3 class="h-ghost"><i class="fa-solid fa-ghost"></i> The Assumption</h3>
-                <p>The code assumes that a single bit shift <code>(1 << required)</code> and a single AND operation will correctly validate permissions.</p>
+                <p>The code assumes <code>required</code> is a bit position, but the caller passes it as a full permission mask.</p>
             </div>
             <div class="hint-step">
                 <h3 class="h-truth"><i class="fa-solid fa-bolt"></i> The Basic Truth</h3>
-                <p><code>required</code> is being treated as a bit position, but in permission systems, <code>required</code> is usually a bitmask itself (e.g., <code>0b1010</code>). The function is shifting a 1 by the entire mask value, not checking if the mask bits are present in <code>user_perms</code>.</p>
+                <p>The caller sends <code>PERMS</code> as a mask like <code>0b1010</code>. Shifting <code>1</code> by that value tries to access bit 10, not the bits described by the mask.</p>
             </div>
             <div class="hint-step">
                 <h3 class="h-rebuild"><i class="fa-solid fa-hammer"></i> The Fix Idea</h3>
-                <div class="rebuild-box">"Because I know <span>[the mask is already a bit pattern, not a position]</span>, my next step is to <span>[AND the user_perms directly with the mask and check if ALL required bits are set]</span>, rather than <span>[shifting a single bit by the mask value]</span>."</div>
+                <div class="rebuild-box">"Because I know <span>[required is already a bitmask]</span>, my next step is to <span>[check if <code>user_perms</code> contains all required bits with <code>(user_perms & required) == required</code>]</span>, rather than shifting a single bit by the entire mask value."</div>
+            </div>
+            <div class="hint-step">
+                <h3 class="h-truth"><i class="fa-solid fa-lightbulb"></i> Finding Basic Truths</h3>
+                <p>Trace the value from the caller to the helper. If the meaning changes along the path, the bug is in the contract between the two functions.</p>
             </div>
         </div>
     </div>
