@@ -534,6 +534,22 @@
                 <p>Flo wants to teach but believes he must first earn a formal teaching degree.</p>
             </div>
         </div>
+
+        <div style="margin-top: 30px;">
+            <p style="color: #5eead4; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; margin: 0 0 16px 0; text-align: center;">— Abstract challenges: problems with no obvious starting point —</p>
+            <div class="level-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+                <div class="level-card card-lvl2" onclick="showLevel('lvl12')">
+                    <i class="fa-solid fa-question level-icon"></i>
+                    <h2>Abstract 1: No clear starting point</h2>
+                    <p>Something feels wrong but you can't name what it is or where it started.</p>
+                </div>
+                <div class="level-card card-lvl3" onclick="showLevel('lvl13')">
+                    <i class="fa-solid fa-layer-group level-icon"></i>
+                    <h2>Abstract 2: Decision paralysis</h2>
+                    <p>You have too many options and too much information — you can no longer decide.</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="lvl7" class="view">
@@ -752,6 +768,127 @@
                     In the next 24 hours, write down <span>the two values in conflict</span>,
                     choose <span>which one leads this season</span>, and define
                     <span>one small way to respect the other value</span>.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="lvl12" class="view">
+        <button class="back-btn" onclick="goBack()">
+            <i class="fa-solid fa-arrow-left"></i> Back to Levels
+        </button>
+
+        <div class="challenge-box">
+            <h3>No clear starting point</h3>
+            <p>Something in your life feels off — you feel stuck, unmotivated, or quietly unhappy — but you cannot name what the actual problem is or where it began. There is no obvious bug to fix and no clear decision to make. The challenge is figuring out where to even begin.</p>
+        </div>
+
+        <button class="hint-btn" onclick="revealHint('hint12')">Show explanation</button>
+
+        <div id="hint12" class="hint-content">
+            <div class="hint-step">
+                <h3><span class="step-number">1.</span> DEFINE — What is the real goal?</h3>
+                <p>
+                    The real goal is not to fix everything at once. The goal is to identify
+                    <strong>one specific area</strong> where the feeling is strongest.
+                    You cannot solve "I feel stuck" — but you can work on "I feel stuck in my evenings after work."
+                    Narrowing from vague to specific is the first job.
+                </p>
+            </div>
+
+            <div class="hint-step">
+                <h3><span class="step-number">2.</span> HUNT — What assumption is blocking the solution?</h3>
+                <p>
+                    A common hidden assumption is: <strong>"I need to understand everything before I can act."</strong>
+                    Another is: <strong>"If I can't explain the problem clearly, it probably isn't real."</strong>
+                    Both assumptions keep you from starting. You don't need full clarity to take a first step.
+                </p>
+            </div>
+
+            <div class="hint-step">
+                <h3><span class="step-number">3.</span> STRIP — What basic truths remain?</h3>
+                <p>
+                    The feeling is real, even without a name. Something is consuming energy or creating resistance.
+                    You don't need to understand the root cause to begin observing it.
+                    The basic truth is: <strong>you can describe the feeling as a pattern — when it appears, what triggers it, and what relieves it — without needing to explain it first.</strong>
+                </p>
+            </div>
+
+            <div class="hint-step">
+                <h3><span class="step-number">4.</span> REBUILD — What better path follows from those truths?</h3>
+                <p>
+                    Instead of trying to diagnose the whole problem before moving, rebuild from what you can observe.
+                    Pick the area of life where the friction appears most often. Ask: what does a good version of that area look like?
+                    <strong>Start with observation, not analysis.</strong>
+                </p>
+            </div>
+
+            <div class="hint-step">
+                <h3><span class="step-number">5.</span> ACTION — What is the next 24-hour task?</h3>
+                <div class="action-box">
+                    In the next 24 hours, write down <span>three moments from the last week when the feeling was strongest</span>.
+                    For each moment, note the situation, the time of day, and what you were doing right before.
+                    Do not explain — just observe. The pattern will emerge.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="lvl13" class="view">
+        <button class="back-btn" onclick="goBack()">
+            <i class="fa-solid fa-arrow-left"></i> Back to Levels
+        </button>
+
+        <div class="challenge-box">
+            <h3>Decision paralysis</h3>
+            <p>You are facing an important decision and have done extensive research. You have more options, opinions, and information than you can process. The more you learn, the harder it becomes to choose. Every path seems to have a fatal flaw. You are stuck — not from lack of information, but from too much of it.</p>
+        </div>
+
+        <button class="hint-btn" onclick="revealHint('hint13')">Show explanation</button>
+
+        <div id="hint13" class="hint-content">
+            <div class="hint-step">
+                <h3><span class="step-number">1.</span> DEFINE — What is the real goal?</h3>
+                <p>
+                    The real goal is not to find the <em>perfect</em> option. The real goal is to
+                    <strong>make a good enough decision that can be adjusted as you learn more.</strong>
+                    Most decisions are reversible or refinable. The assumption that you must get it right the first time is what creates the paralysis.
+                </p>
+            </div>
+
+            <div class="hint-step">
+                <h3><span class="step-number">2.</span> HUNT — What assumption is blocking the solution?</h3>
+                <p>
+                    Two common assumptions: <strong>"More information will eventually make the right choice obvious"</strong>
+                    and <strong>"Choosing wrong is worse than not choosing at all."</strong>
+                    Both are usually false. More information past a certain point adds noise, not clarity.
+                    And staying stuck has its own cost.
+                </p>
+            </div>
+
+            <div class="hint-step">
+                <h3><span class="step-number">3.</span> STRIP — What basic truths remain?</h3>
+                <p>
+                    You already have enough information. The options you are still considering are all survivable — otherwise you would have eliminated them.
+                    The basic truth is: <strong>the remaining options are probably more similar in outcome than they feel right now.</strong>
+                    The friction is psychological, not factual.
+                </p>
+            </div>
+
+            <div class="hint-step">
+                <h3><span class="step-number">4.</span> REBUILD — What better path follows from those truths?</h3>
+                <p>
+                    Stop adding information and instead reduce criteria. Ask: <strong>what are the one or two things that matter most to me in this decision?</strong>
+                    Evaluate only against those. Ignore everything else. A decision made on two clear values beats a decision delayed by twenty competing factors.
+                </p>
+            </div>
+
+            <div class="hint-step">
+                <h3><span class="step-number">5.</span> ACTION — What is the next 24-hour task?</h3>
+                <div class="action-box">
+                    In the next 24 hours, write down <span>the two criteria that matter most</span> to you for this decision — not ten, just two.
+                    Then score each remaining option against only those two.
+                    <span>Commit to the highest scorer</span> for at least two weeks before revisiting.
                 </div>
             </div>
         </div>

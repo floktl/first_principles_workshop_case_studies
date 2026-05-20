@@ -272,6 +272,51 @@
             color: #deff9a;
         }
 
+        .intro-block {
+            background: #111418;
+            border: 1px solid #2d3748;
+            border-radius: 12px;
+            padding: 28px 32px;
+            margin-bottom: 36px;
+        }
+
+        .intro-block h2 {
+            color: #deff9a;
+            font-size: 1.25rem;
+            margin: 0 0 14px 0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .intro-block p {
+            color: #cbd5e1;
+            margin: 0 0 12px 0;
+        }
+
+        .intro-block ul {
+            color: #cbd5e1;
+            margin: 0 0 16px 24px;
+            padding: 0;
+        }
+
+        .intro-block li {
+            margin-bottom: 6px;
+        }
+
+        .intro-example {
+            background: rgba(94, 234, 212, 0.06);
+            border-left: 3px solid #5eead4;
+            border-radius: 0 8px 8px 0;
+            padding: 14px 18px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: #e2e8f0;
+            margin-top: 4px;
+        }
+
+        .intro-example strong {
+            color: #5eead4;
+        }
+
         @media (max-width: 900px) {
             .framework-grid {
                 grid-template-columns: 1fr;
@@ -296,6 +341,20 @@
     </header>
 
     <div id="menu-view" class="view active">
+        <div class="intro-block">
+            <h2>What is First Principles thinking?</h2>
+            <p>First Principles is a method for reasoning from the ground up — not from habit, convention, or analogy. Instead of asking "how do others solve this?", you ask "what do I actually know for sure?"</p>
+            <p>It comes down to two core questions:</p>
+            <ul>
+                <li>What am I assuming?</li>
+                <li>What do I know is undeniably true?</li>
+            </ul>
+            <div class="intro-example">
+                <strong>Quick example:</strong> A bike tire is flat. The assumption: you need to buy a new bike. The basic truth: a tire holds air with a tube. The rebuild: replace the €3 tube — not the €300 bike.
+            </div>
+            <p style="margin: 14px 0 0 0;">The five steps below give you a structure to apply this to any problem — a code bug, a career decision, or a situation where you don't even know where to start.</p>
+        </div>
+
         <div class="framework-grid">
             <div class="framework-step" tabindex="0" role="button" onclick="openModal(1)" onkeydown="handleStepKey(event, 1)">
                 <h4>1. DEFINE</h4>
